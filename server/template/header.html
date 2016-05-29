@@ -1,0 +1,21 @@
+<div id="nav" class="navbar navbar-default" role="navigation">
+    <div id="navbar-header">
+        <a class="navbar-brand" href="/" onclick="activeMenuItem('home')">THCreate</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav" id="menu">
+            <li id="preview" class="{% if page_name == 'preview'%}active{%end%}">
+                <a href="/preview" >实时数据</a>
+            </li>
+            <li id="history" class="{% if page_name == 'history'%}active{%end%}">
+                <a href="/history" >历史数据</a>
+            </li>
+            <li id="download" class="{% if page_name == 'download'%}active{%end%}">
+                <a href="/download" >下载数据</a>
+            </li>
+            <li id="setting" class="{% if page_name == 'setting'%}active{%end%}">
+                <a href="/setting" >采集设置</a>
+            </li>
+        </ul>
+    </div>
+</div>

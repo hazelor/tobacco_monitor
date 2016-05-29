@@ -1,0 +1,112 @@
+
+.toolbar{
+    position:relative;
+    height:43px;
+    background: url("../img/toolbar.gif") repeat-x;
+}
+
+.ctrlPanel{
+    background-image: url("../img/ctrlPanel.gif");
+    width: 94px;
+    height: 88px;
+    float: right;
+    cursor: pointer;
+    }
+.ctrlPanel div{
+    width: 94px;
+    height: 29px;
+}
+
+.ctrlPanel span{
+    display: inline-block;
+    width: 28px;
+    height: 29px;
+}
+#leftup{
+    background: url("../img/ctrlIco/nosel/leftup.gif") no-repeat 50% 50%;
+}
+
+#leftup.sel{
+    background: url("../img/ctrlIco/sel/leftup.gif") no-repeat 50% 50%;
+
+}
+
+#up{
+    background: url("../img/ctrlIco/nosel/up.gif") no-repeat 50% 50%;
+
+}
+
+#up.sel{
+    background: url("../img/ctrlIco/sel/up.gif") no-repeat 50% 50%;
+
+}
+
+#rightup{
+    background: url("../img/ctrlIco/nosel/rightup.gif") no-repeat 50% 50%;
+
+}
+
+#rightup.sel{
+    background: url("../img/ctrlIco/sel/rightup.gif") no-repeat 50% 50%;
+
+}
+
+#left{
+    background: url("../img/ctrlIco/nosel/left.gif") no-repeat 50% 50%;
+
+}
+
+#left.sel{
+    background: url("../img/ctrlIco/sel/left.gif") no-repeat 50% 50%;
+
+}
+
+#auto{
+    background: url("../img/ctrlIco/nosel/auto.gif") no-repeat 50% 50%;
+
+}
+
+#auto.sel{
+    background: url("../img/ctrlIco/sel/auto.gif") no-repeat 50% 50%;
+
+}
+
+#right{
+    background: url("../img/ctrlIco/nosel/right.gif") no-repeat 50% 50%;
+
+}
+
+#right.sel{
+    background: url("../img/ctrlIco/sel/right.gif") no-repeat 50% 50%;
+
+}
+
+#leftdown{
+    background: url("../img/ctrlIco/nosel/leftdown.gif") no-repeat 50% 50%;
+
+}
+
+#leftdown.sel{
+    background: url("../img/ctrlIco/sel/leftdown.gif") no-repeat 50% 50%;
+
+}
+
+#down{
+    background: url("../img/ctrlIco/nosel/down.gif") no-repeat 50% 50%;
+
+}
+
+#down.sel{
+    background: url("../img/ctrlIco/sel/down.gif") no-repeat 50% 50%;
+
+}
+
+#rightdown{
+    background: url("../img/ctrlIco/nosel/rightdown.gif") no-repeat 50% 50%;
+
+}
+
+#rightdown.sel{
+    background: url("../img/ctrlIco/sel/rightdown.gif") no-repeat 50% 50%;
+
+}

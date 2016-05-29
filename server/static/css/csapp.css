@@ -1,0 +1,94 @@
+*{
+    margin:0;
+    padding:0;
+}
+.clearfix {
+  clear: both;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: #5F778B;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  color: #005580;
+}
+
+#footer {
+  border-top: 1px solid #ccc;
+}
+
+.right{
+    float: right;
+}
+
+.left{
+    float: left;
+}
+
+.belief {
+  color: #e4e4e4;
+  font-size: 12px;
+}
+
+.input-txt{
+    width: 32px;
+
+    border:1px solid #ccc;
+    padding:3px;
+}
+
+.contentleft{
+    float: left;
+    width: 201px;
+    overflow:auto;
+}
+
+.sideBarMenu{
+    width: 200px;
+    min-height: 600px;
+    border-right:1px solid #c6c6c6;
+    overflow:hidden;
+}
+
+.submenu{
+    padding:5px 10px;
+    border-bottom: 1px solid #dddddd;
+    display: block;
+    margin-left:23px;
+    padding-left:23px;
+    outline:none;
+}
+
+.basic{
+    background: url("../img/basic.gif") np-repeat 0px 6px;
+}
+
+.mainmenu{
+    padding-left:6px;
+    border-top:1px solid #c6c6c6;
+    font-weight:bold;
+    overflow:hidden;
+}
+
+.footer-copyright {
+    margin-top: 2em;
+    padding: 2em 2em;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.main_footer{
+    position:relative;
+    padding: 30px 0 0;
+}
+
+.navbar-nav {
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none;
+}
+

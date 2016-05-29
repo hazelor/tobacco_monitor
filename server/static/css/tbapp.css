@@ -1,0 +1,64 @@
+.hidden{display:none}
+
+.ImgBox { margin: 0px auto;
+    overflow: hidden;
+    position: relative;
+    padding-top: 30px;
+    text-align: center;
+}
+/*.ImgBox ul { width: 1000px; }*/
+.LayBg { background: #000;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    display: none;
+    _display:none!important
+}
+.LayBox {
+    height: 480px;
+    width: 640px;
+    margin-top: -250px;
+    margin-left: -330px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 20;
+    background: #FFF;
+    display: none;
+    _display:none!important
+}
+.Close { position: absolute; top: -17px; right: -17px; cursor: pointer; }
+.ImgBox ul li { float: left; height: 160px; margin: 0 10px 10px 0; width: 160px; cursor: pointer; }
+
+.originImg{
+    max-height: 720px;
+    max-width: 1080px;
+}
+
+
+
+
+.LoadingImg {
+    display: none;
+
+}
+.Loading_message{
+    top: 50%;
+    text-align: center;
+    display: none;
+}
+.LoadingBg { background: #000;
+    width: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    display: none;
+    _display:none!important
+}
