@@ -233,7 +233,7 @@ class Model(dict):
         Get by primary key.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
 
@@ -247,7 +247,7 @@ class Model(dict):
         only the first one returned. If no result found, return None.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
 
@@ -260,7 +260,7 @@ class Model(dict):
         Find all and return list.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
 
@@ -293,12 +293,12 @@ class Model(dict):
         return [cls(**d) for d in L]
 
     @classmethod
-    def count_all(cls, **kwargs,):
+    def count_all(cls, **kwargs):
         '''
         Find by 'select count(pk) from table' and return integer.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
         return db.select_int('select count(`%s`) from `%s%s`' % (cls.__primary_key__.name, cls.__table__, sub_name))
@@ -315,14 +315,14 @@ class Model(dict):
             sub_name = ""
 
         return db.select_int('select count(`%s`) from `%s%s` %s' % (cls.__primary_key__.name, cls.__table__, sub_name,  where), *args)
-    
-    @classmethod
-    def create(cls, **kwargs):
-         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+
+    def create_table(self, **kwargs):
+        if kwargs.has_key('sub_name'):
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
-        db.update(cls.__sql__()%(sub_name))
+        print self.__sql__()
+        db.update(self.__sql__()%(sub_name))
 
     def update(self,sub_name=''):
         self.pre_update and self.pre_update()
