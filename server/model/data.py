@@ -10,11 +10,11 @@ from transwarp import db
 
 class DataParser():
     
-    __instance = null
+    __instance = None
     
     @staticmethod
     def get_instance():
-        if DataParser.__instance == null:
+        if DataParser.__instance == None:
             DataParser.__instance  = DataParser()
         return DataParser.__instance
     def __init__(self):
@@ -26,6 +26,11 @@ class DataParser():
             json_str = ''.join(contents)
             self.data_infos = json.load(json_str)
 
+    def has_type(self, dev_type):
+        for dev_info in self._data_infos:
+            if dev_info['dev_type'] == dev_type.strip():
+                return True
+        return False
     def parse_dev(self,  table_index, position_id, dev_type, data_content):
         for dev_info in self._data_infos:
             if dev_info['dev_type'] == dev_type.strip():
@@ -81,7 +86,7 @@ class Data_Table_Map(Model):
     @classmethod
     def add_table(cls):
         index = cls.get_last_table_index()
-        new_table = cls.__new__()
+        new_table = Data_Table_Map()
         new_table.end_time = time.time()
         new_table.index = index+1
         new_table.insert()
