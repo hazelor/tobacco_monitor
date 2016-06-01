@@ -1,0 +1,86 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/tbapp.css">
+<script src="/static/js/browser_page.js"></script>
+{%end%}
+{%block title%}图像预览{%end%}
+
+{%block layout_preview%}
+<div>
+    <div class="LayBg"></div>
+    <div class="LayBox">
+        <div class="LayImg"></div>
+        <img class="Close" src={{static_url("img/popup/close.png")}} width="27" height="27"/>
+    </div>
+</div>
+<div>
+    <div class="LoadingBg"></div>
+    <div class="Loading_message"></div>
+    <div class="LoadingImg"></div>
+</div>
+{%end%}
+
+{%block content%}
+    <ol class="breadcrumb">
+        {%for pos in positions%}
+        <li><a href="/browser?position_id={{pos.id}}">摄像机编号{{pos.position}}</a></li>
+        {%end%}
+    </ol>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {%for img in images %}
+                {%include thumbnail.html%}
+            {% end %}
+        </div>
+    </div>
+
+ <div class="clearfix"></div>
+<div class="row">
+    <div class=" left pagination">
+        {{start_page_num}} to {{end_page_num}} of {{ total_page_num }}
+
+    </div>
+    <div style="padding-right: 20px">
+
+        <ul class="pagination right">
+            {%if current_page == 1%}
+
+            {%else%}
+
+            <li>
+                <a href="/preview?page={{current_page-1}}">上一页</a>
+            </li>
+            <li>
+                <a href="/preview?page=1">首页</a>
+            </li>
+            {%end%}
+
+            {% for index in range(start_page_num,end_page_num+1)%}
+                <li class="{%if current_page == index%}active{%end%}">
+                    <a href="/preview?page={{index}}">{{index}}</a>
+                </li>
+            {% end %}
+            {%if current_page == total_page_num%}
+
+            {%else%}
+            <li>
+                <a href="/preview?page={{total_page_num}}">尾页</a>
+            </li>
+            <li>
+                <a href="/preview?page={{current_page+1}}">下一页</a>
+            </li>
+            {%end%}
+            <li style="margin-left: 10px; margin-top:10px">
+                 <input id="page_jump_num" class="input-txt" value="{{current_page}}"
+                        title="输入后回车自动跳转页面"
+                        onkeydown="javascript:if(event.keyCode==13){page_jump();return false;}">
+            /{{ total_page_num}}页
+            </li>
+
+        </ul>
+
+
+    </div>
+
+</div>
+{%end%}

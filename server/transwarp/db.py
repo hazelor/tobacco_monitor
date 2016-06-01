@@ -434,6 +434,7 @@ def insert(table, **kw):
     sql = 'insert into `%s` (%s) values (%s)' % (table, ','.join(['`%s`' % col for col in cols]), ','.join(['?' for i in range(len(cols))]))
     return _update(sql, *args)
 
+
 def update(sql, *args):
     r'''
     Execute update SQL.

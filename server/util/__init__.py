@@ -5,7 +5,7 @@ from hashlib import sha1
 import os
 import md5
 
-def getPWDDir():
+def get_pwd_dir():
     return os.getcwd()
 
 def get_md5(raw_str):

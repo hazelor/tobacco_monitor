@@ -100,7 +100,7 @@ _triggers = frozenset(['pre_insert', 'pre_update', 'pre_delete'])
 
 def _gen_sql(table_name, mappings):
     pk = None
-    sql = ['-- generating SQL for %s:' % table_name, 'create table `%s` (' % table_name]
+    sql = ['-- generating SQL for %s:' % table_name, 'create table `%s%%s` (' % table_name]
     for f in sorted(mappings.values(), lambda x, y: cmp(x._order, y._order)):
         if not hasattr(f, 'ddl'):
             raise StandardError('no ddl in field "%s".' % n)
@@ -228,28 +228,43 @@ class Model(dict):
 
 
     @classmethod
-    def get(cls, pk):
+    def get(cls, pk, ** kwargs):
         '''
         Get by primary key.
         '''
-        d = db.select_one('select * from %s where %s=?' % (cls.__table__, cls.__primary_key__.name), pk)
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+
+        d = db.select_one('select * from %s%s where %s=?' % (cls.__table__, sub_name,  cls.__primary_key__.name), pk)
         return cls(**d) if d else None
 
     @classmethod
-    def find_first(cls, where, *args):
+    def find_first(cls, where, *args, ** kwargs):
         '''
         Find by where clause and return one result. If multiple results found,
         only the first one returned. If no result found, return None.
         '''
-        d = db.select_one('select * from %s %s' % (cls.__table__, where), *args)
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+
+        d = db.select_one('select * from %s%s %s' % (cls.__table__, sub_name, where), *args)
         return cls(**d) if d else None
 
     @classmethod
-    def find_all(cls, *args):
+    def find_all(cls, *args, **kwargs):
         '''
         Find all and return list.
         '''
-        L = db.select('select * from `%s`' % cls.__table__)
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+
+        L = db.select('select * from `%s%s`' % cls.__table__, sub_name)
         return [cls(**d) for d in L]
 
     # need to change!!!!
@@ -265,28 +280,51 @@ class Model(dict):
     #    return cls(**d) if d else None
 
     @classmethod
-    def find_by(cls, where, *args):
+    def find_by(cls, where, *args, **kwargs):
         '''
         Find by where clause and return list.
         '''
-        L = db.select('select * from `%s` %s' % (cls.__table__, where), *args)
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+
+        L = db.select('select * from `%s%s` %s' % (cls.__table__, sub_name,  where), *args)
         return [cls(**d) for d in L]
 
     @classmethod
-    def count_all(cls):
+    def count_all(cls, **kwargs,):
         '''
         Find by 'select count(pk) from table' and return integer.
         '''
-        return db.select_int('select count(`%s`) from `%s`' % (cls.__primary_key__.name, cls.__table__))
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+        return db.select_int('select count(`%s`) from `%s%s`' % (cls.__primary_key__.name, cls.__table__, sub_name))
+    
 
     @classmethod
-    def count_by(cls, where, *args):
+    def count_by(cls, where, *args, **kwargs):
         '''
         Find by 'select count(pk) from table where ... ' and return int.
         '''
-        return db.select_int('select count(`%s`) from `%s` %s' % (cls.__primary_key__.name, cls.__table__, where), *args)
+        if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
 
-    def update(self):
+        return db.select_int('select count(`%s`) from `%s%s` %s' % (cls.__primary_key__.name, cls.__table__, sub_name,  where), *args)
+    
+    @classmethod
+    def create(cls, **kwargs):
+         if kwargs.has_key('sub_name'):
+            sub_name = args['sub_name']
+        else:
+            sub_name = ""
+        db.update(cls.__sql__()%(sub_name))
+
+    def update(self,sub_name=''):
         self.pre_update and self.pre_update()
         L = []
         args = []
@@ -301,17 +339,17 @@ class Model(dict):
                 args.append(arg)
         pk = self.__primary_key__.name
         args.append(getattr(self, pk))
-        db.update('update `%s` set %s where %s=?' % (self.__table__, ','.join(L), pk), *args)
+        db.update('update `%s%s` set %s where %s=?' % (self.__table__,sub_name, ','.join(L), pk), *args)
         return self
 
-    def delete(self):
+    def delete(self,sub_name=''):
         self.pre_delete and self.pre_delete()
         pk = self.__primary_key__.name
         args = (getattr(self, pk), )
-        db.update('delete from `%s` where `%s`=?' % (self.__table__, pk), *args)
+        db.update('delete from `%s%s` where `%s`=?' % (self.__table__,sub_name, pk), *args)
         return self
 
-    def insert(self):
+    def insert(self,sub_name=''):
         self.pre_insert and self.pre_insert()
         params = {}
         for k, v in self.__mappings__.iteritems():
@@ -319,12 +357,12 @@ class Model(dict):
                 if not hasattr(self, k):
                     setattr(self, k, v.default)
                 params[v.name] = getattr(self, k)
-        db.insert('%s' % self.__table__, **params)
+        db.insert('%s%s' % (self.__table__, sub_name), **params)
         return self
 
 if __name__=='__main__':
     logging.basicConfig(level=logging.DEBUG)
-    db.create_engine('sonic513', 'sonic513', 'cam_survilliance', host='127.0.0.1',port='3307')
+    db.create_engine('sonic513', 'sonic513', 'test', host='127.0.0.1',port='3307')
     #db.update('drop table if exists user')
     #db.update('create table user (id int primary key, name text, email text, passwd text, last_modified real)')
     import doctest

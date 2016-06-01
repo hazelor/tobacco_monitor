@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="True" name="HandheldFriendly" />
+	<meta content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0; name='viewport'" />
+    <title>THCreate-物候监测系统-{%block title%}{%end%}</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/csapp.css">
+
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/spin.js"></script>
+
+
+    {% block metadata%}{%end%}
+</head>
+<body>
+<div>
+    {%block layout_preview%}{%end%}
+    <div class="LayBg"></div>
+    <div class="container">
+        <!--header part-->
+        {%include header.html%}
+
+        <!--content part-->
+        <div class="row content">
+            {%block content%}{%end%}
+        </div>
+        <!--footer part-->
+        <div class="row footer-copyright">
+            {%include "footer.html" %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

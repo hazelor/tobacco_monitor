@@ -1,0 +1,33 @@
+{%extends "base.html" %}
+{% block metadata%}
+
+{%end%}
+{%block title%}登陆{%end%}
+
+{%block content%}
+<div class='row col-lg-4 col-lg-offset-4'>
+    <form action='/login' method='post' class='well'>
+        <div class='form-group'>
+            <label>用户名</label>
+            <p class='text-danger' style="display: inline">{{username_warning}}</p>
+            <input type='text' name='username' class='form-control'/>
+        </div>
+        <div class='form-group'>
+            <label>密码</label>
+            <p class='text-danger' style="display: inline">{{password_warning}}</p>
+            <input type='password' name='password' class='form-control'/>
+        </div>
+        <!--<div class='form-group'>-->
+            <!--<label>确认密码</label>-->
+            <!--<input type='password' name='password2' class='form-control'/>-->
+        <!--</div>-->
+        <div class="ui-dialog-buttonset">
+            <a href="/register" class='btn btn-primary'>注册</a>
+            <button type='submit' class='btn btn-primary'>登录</button>
+        </div>
+
+        <p class='text-danger' style="display: inline">{{login_warning}}</p>
+        <!--<a href='/'>已有帐号，请直接登录</a>-->
+    </form>
+</div>
+{%end%}

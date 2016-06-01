@@ -1,0 +1,48 @@
+{%extends "base.html" %}
+
+{%block title%}主页-{{user_name}}{%end%}
+
+{%block content%}
+<h1>欢迎您，{{user_name}}</h1>
+{%if device_counts > 0%}
+    <div>
+        <h2>您关联设备个数为{{device_counts}}。</h2>
+        <br/>
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-1">
+                <col class="col-xs-1">
+                <col class="col-xs-1">
+                <col class="col-xs-3">
+            </colgroup>
+                <thead>
+                    <tr>
+                        <th>设备地点</th>
+                        <th>摄像头编号</th>
+                        <th>摄像周期</th>
+                        <th>图像数量</th>
+                        <th>观测物种</th>
+                    </tr>
+                </thead>
+                {%for dev_info in device_info%}
+                    {% for pos_info in dev_info['position_contents']%}
+                        <tr>
+                            <td class="active">{{dev_info['location']}}</td>
+                            <td>{{pos_info['position']}}</td>
+                            <td>{{pos_info['duration']}}</td>
+                            <td>{{pos_info['image_count']}}</td>
+                            <td>{{pos_info['object_name']}}</td>
+                        </tr>
+                    {%end%}
+                {%end%}
+        </table>
+    </div>
+{%else%}
+    <div>
+        <h2>您还没有关联设备，请通过终端关联</h2>
+    </div>
+{%end%}
+
+
+
+{%end%}
