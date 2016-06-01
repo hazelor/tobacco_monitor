@@ -14,7 +14,7 @@ class Position_Image(Model):
     device_id = StringField(ddl='varchar(32)')
     position = IntegerField()
     object_name = StringField(ddl='varchar(50)')
-    duration = IntegerField()
+    duration = StringField(ddl='varchar(50)')
 
     def validate(self):
         dev = Device()
@@ -55,7 +55,7 @@ class Position_Data(Model):
     device_id = StringField(ddl='varchar(32)')
     position = IntegerField()
     pos_type = StringField(ddl='varchar(50)')
-    duration = IntegerField()
+    duration = StringField(ddl='varchar(50)')
 
     def validate(self):
         dev = Device()
