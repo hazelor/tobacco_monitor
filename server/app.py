@@ -34,5 +34,5 @@ def connect_db():
 if __name__ == "__main__":
     app = create_app()
     connect_db()
-    app.listen(options.port)
-    tornado.ioloop.IOLoop.instance().start()
+    #app.listen(options.port)
+    #tornado.ioloop.IOLoop.instance().start()
