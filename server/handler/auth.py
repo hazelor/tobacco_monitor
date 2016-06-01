@@ -1,5 +1,5 @@
+# coding=utf-8
 from base import base_handler
-mport task
 import tornado
 from model.user import User
 from tornado.options import options
@@ -69,8 +69,8 @@ class login_handler(base_handler):
                 res = self.user_login(username, password)
                 self.on_login_success(res)
     def user_login(username, password):
-         u = user.User.find_first('where name = ? and password = ?', username, hash_password(password))
-         if u:
+        u = User.find_first('where name = ? and password = ?', username, hash_password(password))
+        if u:
             return u
         else:
             return None

@@ -3,7 +3,7 @@ import redis
 import tornado, tornado.web
 import json
 import time
-from model.postion import Position_Data, Position_Image
+from model.position import Position_Data, Position_Image
 from model.device import Device
 from model.device_observed import Device_Observed
 from model.data import DataParser

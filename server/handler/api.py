@@ -50,8 +50,7 @@ class api_image_handler(base_handler):
             meta = file_metas[0]
             res = self.img_upload(device_mac, device_pos,created_at, meta)
             if res:
-                
-            self.on_upload_success(res)
+                self.on_upload_success(res)
 
     def img_upload(self, device_mac, device_pos,created_at, meta):
         if device_mac == "":
