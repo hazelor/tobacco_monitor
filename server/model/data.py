@@ -5,6 +5,8 @@ from transwarp.orm import Model, StringField, BooleanField, FloatField, TextFiel
 import time,os
 import json
 from util.marcos import DATA_INFOS_FILE_PATH, MAX_TABLE_LINES
+from util import *
+from transwarp import db
 
 class DataParser():
     
@@ -61,13 +63,13 @@ class Data(Model):
 
 
 class Data_Table_Map(Model):
-     id = StringField(primary_key=True, ddl='varchar(32)', default=next_id)
-     start_time = FloatField(ddl='double',  default=time.time)
-     end_time = FloatField(ddl='double')
-     index = IntegerField()
+    id = StringField(primary_key=True, ddl='varchar(32)', default=next_id)
+    start_time = FloatField(ddl='double',  default=time.time)
+    end_time = FloatField(ddl='double')
+    index = IntegerField()
 
-     @classmethod
-     def get_last_table_index(cls):
+    @classmethod
+    def get_last_table_index(cls):
         if cls.count_all() == 0:
             return 0
         else:
@@ -76,7 +78,6 @@ class Data_Table_Map(Model):
                 return data_table.index
             else:
                 return 0
-
     @classmethod
     def add_table(cls):
         index = cls.get_last_table_index()
@@ -95,6 +96,4 @@ class Data_Table_Map(Model):
 
 if __name__=="__main__":
     db.create_engine('sonic513', 'sonic513', 'collection_test', host='127.0.0.1',port='3307')
-    cd = Collected_Data()
-    cd.__table__ = cd.__table__ + "1"
-    db.update(cd.__sql__())
+

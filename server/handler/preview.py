@@ -1,8 +1,15 @@
 from base import base_handler
 import redis
+import tornado, tornado.web
+import json
+import time
 from model.postion import Position_Data, Position_Image
 from model.device import Device
 from model.device_observed import Device_Observed
+from model.data import DataParser
+from model.image import Image
+
+from util.marcos import *
 
 class data_preview_handler(base_handler):
     @tornado.web.authenticated
@@ -11,17 +18,19 @@ class data_preview_handler(base_handler):
         device_observed = Device_Observed()
         devices = device_observed.observed_devices(usr.id)
         position = Position_Data()
-         if not devices or len(devices) < 1:
+        if not devices or len(devices) < 1:
             return self.render('no_devices.html', user_name=usr.name, page_name="browser")
         positions = []
+        pos = Position_Data()
         for dev in devices:
-            positions.extend(position.get_position_by_device_id(dev.id))
+            positions.extend(pos.get_position_by_device_id(dev.id))
         current_position_id = self.get_argument('position_id', '')
         if not current_position_id:
             if positions:
                 current_position_id = positions[0].id
             else:
                 current_position_id = "0"
+
         return self.render('preview.html',
                 page_name='preview',
                 positions=positions,
@@ -40,7 +49,7 @@ class data_preview_realtime_handler(base_handler):
             r  = redis.Redis()
             data_content = r.hget("col_datas_%s_%s" %(dev.mac, pos.position))
             res = DataParser.get_instance().parse_to_json(pos.pos_type, data_content['content'], data_content['date'])
-            res = data.json.dumps(res)
+            res = json.dumps(res)
             self.write(res)
             return self.finish()
 
@@ -52,7 +61,7 @@ class img_preview_handler(base_handler):
     def get(self, *args,**kwargs):
         usr = self.get_current_user()
         device_observed = Device_Observed()
-        position = Position()
+        position = Position_Image()
         image = Image()
         devices = device_observed.observed_devices(usr.id)
         if not devices or len(devices) < 1:

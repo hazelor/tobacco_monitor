@@ -3,6 +3,7 @@ __author__ = 'sonic-server'
 # import tornado
 import tornado.web
 
+
 class base_handler(tornado.web.RequestHandler):
     def send_error_json(self, data):
         return self.write({
@@ -28,7 +29,7 @@ class base_handler(tornado.web.RequestHandler):
 
     def is_admin(self):
         usr = self.get_current_user()
-         if usr.permission != PERMISSION_ADMIN:
+        if usr.permission != PERMISSION_ADMIN:
             return False
         else:
             return True

@@ -3,6 +3,7 @@ mport task
 import tornado
 from model.user import User
 from tornado.options import options
+from util import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
