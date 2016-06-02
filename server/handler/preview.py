@@ -127,3 +127,6 @@ class img_preview_handler(base_handler):
                            images=images
                            )
 
+class chart_module(tornado.web.UIModule):
+    def render(self, type_id):
+        self.
