@@ -8,38 +8,77 @@
     <div>
         <h2>您关联设备个数为{{device_counts}}。</h2>
         <br/>
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-1">
-                <col class="col-xs-1">
-                <col class="col-xs-1">
-                <col class="col-xs-3">
-            </colgroup>
-                <thead>
-                    <tr>
-                        <th>设备地点</th>
-                        <th>摄像头编号</th>
-                        <th>摄像周期</th>
-                        <th>图像数量</th>
-                        <th>观测物种</th>
-                    </tr>
-                </thead>
-                {%for dev_info in device_info%}
-                    {% for pos_info in dev_info['position_contents']%}
+        <div class="panel panel-default">
+            <div class="panel-heading">设备图像信息概要</div>
+            <div class="panel-body">
+                <table class="table table-bordered table-striped">
+                <colgroup>
+                    <col class="col-xs-1">
+                    <col class="col-xs-1">
+                    <col class="col-xs-1">
+                    <col class="col-xs-3">
+                </colgroup>
+                    <thead>
                         <tr>
-                            <td class="active">{{dev_info['location']}}</td>
-                            <td>{{pos_info['position']}}</td>
-                            <td>{{pos_info['duration']}}</td>
-                            <td>{{pos_info['image_count']}}</td>
-                            <td>{{pos_info['object_name']}}</td>
+                            <th>设备地点</th>
+                            <th>摄像头编号</th>
+                            <th>摄像周期</th>
+                            <th>图像数量</th>
+                            <th>观测物种</th>
                         </tr>
+                    </thead>
+                    {%for dev_info in device_image_info%}
+                        {% for pos_info in dev_info['position_contents']%}
+                            <tr>
+                                <td class="active">{{dev_info['location']}}</td>
+                                <td>{{pos_info['position']}}</td>
+                                <td>{{pos_info['duration']}}</td>
+                                <td>{{pos_info['image_count']}}</td>
+                                <td>{{pos_info['object_name']}}</td>
+                            </tr>
+                        {%end%}
+                    {%end%}
+                </table>
+            </div>
+        </div><!--panel panel-default-->
+        <div class="panel panel-default">
+            <div class="panel-heading">设备采集信息概要</div>
+            <div class="panel-body">
+                {%for dev_info in device_data_info%}
+                    {% for pos_info in dev_info['position_contents']%}
+                        <div class="panel panel-default">
+                            <div class="panel-heading"></div>
+                            <div class="panel-body">
+                                <table class="table table-bordered table-striped">
+                                    <colgroup>
+                                        <col class="col-xs-1">
+                                        <col class="col-xs-3">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>数据</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                    {%for data_content in pos_info %}
+                                            <td class="active">{{data_content['name']}}</td>
+                                            <td>{{data_content['value']}}</td>
+                                    {%end%}
+                                    </tr>
+
+
+                                </table>
+                            </div>
+                        </div>
                     {%end%}
                 {%end%}
-        </table>
+            </div>
+        </div>
     </div>
 {%else%}
     <div>
-        <h2>您还没有关联设备，请通过终端关联</h2>
+        <h2>您还没有关联设备，请联系管理员进行终端关联</h2>
     </div>
 {%end%}
 

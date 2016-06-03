@@ -1,0 +1,29 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/preview_app.css">
+<script src="/static/js/preview_app.js"></script>
+<!--<script src="/static/js/data_show.js"></script>-->
+<script src="/static/js/chart/highcharts.js"></script>
+<script src="/static/js/chart/modules/exporting.js"></script>
+<script src="/static/js/chart/themes/grid.js"></script>
+{%end%}
+{%block title%}采集数据{%end%}
+
+{%block content%}
+    <div class="row">
+        <select class="combobox form-control" id="selected_device" value="{{sel_dev.id}}" onchange='on_selected_device_change()'>
+            {%for dev in devices%}
+                <option value="{{dev.location}}">{{dev.id}}</option>
+            {%end%}
+        </select>
+    </div>
+    <br/>
+    <div class="content">
+        {% include device_col_data.html %}
+    </div>
+    <div>
+        <div class="LoadingBg"></div>
+        <div class="Loading_message"></div>
+        <div class="LoadingImg"></div>
+    </div>
+{%end%}

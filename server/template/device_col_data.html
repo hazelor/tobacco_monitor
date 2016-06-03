@@ -1,0 +1,32 @@
+
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">采集数据信息</div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <!--draw pic-->
+                {% for data_info in datas_infos %}
+                    <div id="chart_{{data_info["type_id"]}}"></div>
+                {%end%}
+
+            </div>
+            <div class="col-lg-4">
+                <table class="table table-bordered table-striped" id='data_table'>
+                    <!--<colgroup>-->
+                        <!--<col class="col-xs-1">-->
+                        <!--<col class="col-xs-3">-->
+                    <!--</colgroup>-->
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>项目</th>-->
+                        <!--<th>信息</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

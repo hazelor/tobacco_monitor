@@ -1,0 +1,91 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap-datetimepicker.min.css">
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/history_app.css">
+<script src="/static/js/history_app.js"></script>
+
+<!--<link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">-->
+<script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="/static/js/chart/highcharts.js"></script>
+<script src="/static/js/chart/modules/exporting.js"></script>
+<script src="/static/js/chart/themes/grid.js"></script>
+
+<script type="text/javascript">
+    Highcharts.setOptions({global: {useUTC: false}});
+</script>
+
+{%end%}
+{%block title%}历史数据{%end%}
+
+{%block content%}
+    <div class="panel panel-default">
+        <div class="panel-heading">时间范围</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">起始时间
+                        </span>
+                        <input type="text" class="form-control form_datetime" aria-label="..." id="start_time"/>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">结束时间
+                        </span>
+                        <input type="text" class="form-control form_datetime" aria-label="..." id="end_time"/>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </div>
+    <script>
+        $(".form_datetime").datetimepicker({format:"yyyy-mm-dd hh:ii"})
+    </script>
+    <div class="panel panel-default">
+        <div class="panel-heading">历史数据浏览</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">设备
+                        </span>
+                        <select class="combobox form-control" id="sel_device" onchange="device_changed()" value="{{sel_device.id}}">
+                        {%for dev in devices%}
+                            <option value="{{dev.id}}">{{dev.location}}</option>
+                        {%end%}
+                        </select>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">数据
+                        </span>
+                            <select class="combobox form-control" id="sel_data" value="{{sel_data['type_id']}}">
+                            {%for item in datas_info%}
+                                <option value="{{item['name']}}">{{item['type_id']}}</option>
+                            {%end%}
+                        </select>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </div>
+    <div class="input-group">
+        <input type="text" id="reboot_btn" class="form-control btn btn-primary" role="button" value="确定" onclick="selected_history()">
+    </div><!-- /input-group -->
+    <!-- history plotter-->
+    <div class="row plotter">
+        <div id="chart_history" class="col-lg-12 col-sm-12 col-md-12"></div>
+    </div>
+    <div>
+        <div class="LoadingBg"></div>
+        <div class="Loading_message"></div>
+        <div class="LoadingImg"></div>
+    </div>
+{%end%}

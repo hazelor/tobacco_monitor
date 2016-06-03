@@ -5,7 +5,13 @@
     {%if user_name%}
         <ul class="nav navbar-nav" id="menu" style="float: left;">
             <li id="browser" class="{% if page_name == 'browser'%}active{%end%}">
-                <a href="/browser" >图像预览</a>
+                <a href="/img/preview" >采集图像预览</a>
+            </li>
+            <li id="preview" class="{% if page_name == 'preview'%}active{%end%}">
+                <a href="/data/preview">采集数据预览</a>
+            </li>
+            <li id="history" class="{% if page_name == 'history'%}active{%end%}">
+                <a href="/data/history">采集数据历史</a>
             </li>
 
         </ul>
