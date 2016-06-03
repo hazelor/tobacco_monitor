@@ -21,34 +21,32 @@ class data_preview_handler(base_handler):
         if not devices or len(devices) < 1:
             return self.render('no_devices.html', user_name=usr.name, page_name="browser")
         positions = []
-        pos = Position_Data()
-        for dev in devices:
-            positions.extend(pos.get_position_by_device_id(dev.id))
-        current_position_id = self.get_argument('position_id', '')
-        if not current_position_id:
-            if positions:
-                current_position_id = positions[0].id
-            else:
-                current_position_id = "0"
+        sel_device_id = self.get_argument('sel_device_id','')
+        if sel_device_id == "":
+            dev = devices[0]
+        else:
+            dev =Device.get(sel_device_id)
+
+        datas_infos = DataParser.get_instance().get_data_types(dev.dev_type)
+
+
 
         return self.render('preview.html',
                 page_name='preview',
-                positions=positions,
-               current_position_id=current_position_id,
-               user_name=usr.name,
+                devices = devices,
+                sel_dev=dev,
+                datas_infos = datas_infos,
+                user_name=usr.name,
                 )
 
 class data_preview_realtime_handler(base_handler):
     def get(self, *args, **kwargs):
-        pos_id = self.get_argument('pos_id','')
-        pos = Position_Data.get(pos_id)
-        if pos:
-            dev = Device.get(pos.device_id)
-            if not dev:
-                return self.finish()
+        sel_device_id = self.get_argument('sel_device_id','')
+        dev = Device.get(sel_device_id)
+        if dev:
             r  = redis.Redis()
-            data_content = r.hget("col_datas_%s_%s" %(dev.mac, pos.position))
-            res = DataParser.get_instance().parse_to_json(pos.pos_type, data_content['content'], data_content['date'])
+            data_content = r.hget("col_datas_%s" %(dev.mac))
+            res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
             res = json.dumps(res)
             self.write(res)
             return self.finish()
@@ -127,6 +125,3 @@ class img_preview_handler(base_handler):
                            images=images
                            )
 
-class chart_module(tornado.web.UIModule):
-    def render(self, type_id):
-        self.

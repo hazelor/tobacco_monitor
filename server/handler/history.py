@@ -1,9 +1,10 @@
 from base import base_handler
 import time
 import json
-from model.data import Data_Table_Map, Data
+from model.data import Data_Table_Map, Data, DataParser
 from model.device_observed import Device_Observed
-from model.position import Position_Data
+from model.deivce import Device
+
 import tornado
 import tornado.web
 
@@ -15,28 +16,66 @@ class data_history_handler(base_handler):
         usr = self.get_current_user()
         device_observed = Device_Observed()
         devices = device_observed.observed_devices(usr.id)
-        position = Position_Data()
         if not devices or len(devices) < 1:
             return self.render('no_devices.html', user_name=usr.name, page_name="browser")
-        devs_info = {}
-        for dev in devices:
-            devs_info[dev.location] = position.get_position_by_device_id(dev.id)
+
+        sel_device_id = self.get_argument('sel_device_id','')
+        sel_device = Device.get(sel_device_id)
+        if sel_device_id == '':
+            sel_device = devices[0]
+
+        data_infos = DataParser.get_instance().get_data_types(sel_device.dev_type)
         return self.render('history.html',
-            page_name = 'history',
-            devs_info = devs_info,
-            user_name=usr.name)
+                           page_name = 'history',
+                           devices = devices,
+                           sel_device = sel_device,
+                           data_infos =data_infos,
+                           user_name=usr.name)
+
+    def post(self):
+        usr = self.get_current_user()
+        device_observed = Device_Observed()
+        devices = device_observed.observed_devices(usr.id)
+        if not devices or len(devices) < 1:
+            return self.render('no_devices.html', user_name=usr.name, page_name="browser")
+
+        sel_device_id = self.get_argument('sel_device_id','')
+        sel_device = Device.get(sel_device_id)
+        if sel_device_id == '':
+            sel_device = devices[0]
+
+        data_infos = DataParser.get_instance().get_data_types(sel_device.dev_type)
+        return self.write(json.dumps(data_infos))
 
 class data_history_query_handler(base_handler):
+    def get_data_info(self, tables, type_id, dev_id, start_time, end_time):
+        data_list = []
+        for table in tables:
+            data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, type_id, start_time, end_time, sub_name = str(table.index)))
+        res = {}
+
+        data_info = DataParser.get_instance().get_data_type(dev_id, type_id)
+        res['name'] = data_info['name']
+        res['type_id'] = data_info['type_info']
+        res['values'] = []
+        for data_item in data_list:
+            res['values'].append([data_item.created_at, data_item.value])
+        return res
+
     def get(self):
-        pos_id = self.get_argument('pos_id','')
+        dev_id = self.get_argument('dev_id','')
         type_id = self.get_argument('type_id','')
         start_time=self.get_argument('start_time')+':00'
         start_time = time.mktime(time.strptime(start_time, '%Y-%m-%d %H:%M:%S'))
         end_time=self.get_argument('end_time')+':00'
         end_time = time.mktime(time.strptime(end_time, '%Y-%m-%d %H:%M:%S'))
         tables = Data_Table_Map.get_tables(start_time, end_time)
-        data_list = []
-        for table in tables:
-            data_list.extend(Data.find_by('where position_id = ? and type_id = ?', pos_id, type_id, sub_name = str(table.index)))
-        self.write(json.dumps(data_list))
-
+        if type_id != "":
+            res = self.get_data_info(tables, type_id, dev_id, start_time, end_time)
+            self.write(json.dumps(res))
+        else:
+            datas_info = DataParser.get_instance().get_data_types(dev_id)
+            reses = []
+            for di in datas_info:
+                reses.append(self.get_data_info(tables, di['type_id'], dev_id, start_time, end_time))
+            self.write(json.dumps(reses))

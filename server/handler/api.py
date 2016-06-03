@@ -17,11 +17,10 @@ class api_data_handler(base_handler):
         jdatas = json.loads(self.request.body)
 
         device_mac = jdatas['mac']
-        device_pos = jdatas['pos']
         data_content = jdatas['data_content']
         #insert the new data to redis
         r=redis.Redis()
-        r.hmset("col_datas_%s_%s"%(device_mac, device_pos), data_content)
+        r.hmset("col_datas_%s"%(device_mac), data_content)
         #get the last table in redis and if there is not a record in redis and get the newest record in the table map
         index = r.hget("last_table_index")
         if not index:
