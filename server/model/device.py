@@ -10,6 +10,7 @@ class Device(Model):
     id = StringField(primary_key=True, ddl='varchar(32)', default=next_id)
     location = StringField(ddl='varchar(50)')
     mac = StringField(ddl='varchar(50)')
+    dev_type = StringField(ddl='varchar(50)')
     created_at = FloatField(updatable=False, default=time.time)
 
     def create(self):

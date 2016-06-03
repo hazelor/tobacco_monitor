@@ -4,13 +4,12 @@ import sys
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor')
+    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3307)
 
 if __name__=="__main__":
     connect_db()
     location = sys.argv[1]
     mac = sys.argv[2]
-
     dev = Device(location = location, mac=mac)
     id= dev.create()
     if id:
