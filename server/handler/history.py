@@ -3,7 +3,7 @@ import time
 import json
 from model.data import Data_Table_Map, Data, DataParser
 from model.device_observed import Device_Observed
-from model.deivce import Device
+from model.device import Device
 
 import tornado
 import tornado.web

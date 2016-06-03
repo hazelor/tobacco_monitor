@@ -29,10 +29,10 @@ def create_app():
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor')
+    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3307)
 
 if __name__ == "__main__":
     app = create_app()
     connect_db()
-    #app.listen(options.port)
-    #tornado.ioloop.IOLoop.instance().start()
+    app.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()

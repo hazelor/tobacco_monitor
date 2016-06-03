@@ -68,7 +68,7 @@ class login_handler(base_handler):
             else:
                 res = self.user_login(username, password)
                 self.on_login_success(res)
-    def user_login(username, password):
+    def user_login(self,username, password):
         u = User.find_first('where name = ? and password = ?', username, hash_password(password))
         if u:
             return u
@@ -81,7 +81,7 @@ class login_handler(base_handler):
             self.set_secure_cookie('u_u', str(user_id))
             return_url = self.get_argument('return', '/')
             if resp.permission ==1:
-                return_url = '/admin'
+                return_url = '/'
             self.redirect(return_url)
         else:
             self.render('login.html',

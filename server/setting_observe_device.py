@@ -6,14 +6,14 @@ import sys
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor')
+    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3307)
 
 if __name__=="__main__":
     connect_db()
     user_name = sys.argv[1]
-    mac = sys.argv[3]
-    dev = Device.find_first("where mac = ?", mac)
-    usr = User.find_first("where name = ?", user_name)
+    mac = sys.argv[2]
+    dev = Device.find_first("where mac = ?", mac.strip())
+    usr = User.find_first("where name = ?", user_name.strip())
     dev_obs = Device_Observed()
     if dev_obs.observe(usr.id, dev.id):
         print "dev observe success!"

@@ -5,7 +5,7 @@ import sys
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor')
+    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3307)
 
 if __name__=="__main__":
     connect_db()
@@ -16,9 +16,9 @@ if __name__=="__main__":
     dev = Device.find_first("where mac=?", mac)
     if not dev:
         print "device with mac not found!"
-        return
 
     pos = Position_Image(position = int(position), object_name=object_name, device_id = dev.id, duration = duration)
+    pos.create_table()
     id= pos.create()
     if id:
         print "add image pos %s OK!" % position

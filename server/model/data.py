@@ -64,13 +64,13 @@ class DataParser():
         for dev_info in self._data_infos:
             if dev_info['dev_type'] == dev_type.strip():
                 for index in range(min(len(data_content), len(dev_info['data_content']))):
-                    res.append({'name':dev_info['data_content'][index]['name'],'type_id':dev_info['data_content'][index]['type_id'], 'value': data_content[index]})
+                    res.append({'name':dev_info['data_content'][index]['name'],'type_id':dev_info['data_content'][index]['type_id'], 'unit':dev_info['data_content'][index]['unit'], 'value': data_content[index]})
         return {"date":date, 'content':res}
 
 
 
 class Data(Model):
-    __table__ = 'Col_Data'
+    __table__ = 'col_data'
 
     id = StringField(primary_key=True, ddl='varchar(32)', default=next_id)
     device_id = StringField(ddl='varchar(50)')

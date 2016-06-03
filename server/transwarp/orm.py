@@ -251,7 +251,7 @@ class Model(dict):
         else:
             sub_name = ""
 
-        d = db.select_one('select * from %s%s %s' % (cls.__table__, sub_name, where), *args)
+        d = db.select_one('select * from `%s%s` %s' % (cls.__table__, sub_name, where), *args)
         return cls(**d) if d else None
 
     @classmethod
