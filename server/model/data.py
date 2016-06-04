@@ -7,6 +7,9 @@ import json
 from util.marcos import DATA_INFOS_FILE_PATH, MAX_TABLE_LINES
 from util import *
 from transwarp import db
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class DataParser():
     
@@ -24,7 +27,9 @@ class DataParser():
             contents = dis.readlines()
             contents = [x.strip() for x in contents]
             json_str = ''.join(contents)
-            self.data_infos = json.load(json_str)
+            #print "the json string:",json_str
+            self._data_infos = eval(json_str)
+            print self._data_infos
 
     def has_type(self, dev_type):
         for dev_info in self._data_infos:

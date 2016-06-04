@@ -57,7 +57,7 @@ class home_handler(base_handler):
         r  = redis.Redis()
         reses = []
         for dev in devices:
-            data_content = r.hget("col_datas_%s" %(dev.mac))
+            data_content = r.get("col_datas_%s" %(dev.mac))
             res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
             reses.append(res)
         return reses
