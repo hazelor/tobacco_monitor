@@ -36,7 +36,7 @@ class Device_Observed(Model):
         devices = []
         dev = Device()
         for dev_id in dev_ids:
-            devices.append(dev.creator(dev_id.device_id))
+            devices.append(dev.get(dev_id.device_id))
         return devices
 
     def count_user_devices(self, user_id):
