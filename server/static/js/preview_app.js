@@ -42,9 +42,15 @@ function on_selected_device_change(){
                     }
                     else{
                         var jdata= $.parseJSON(data);
-                        jdata.forEach(function(res){
-                            render_chart(res['values'],res['name'],res['name'], res['type_id'])
-                        });
+                        if(jdata.length >0){
+                            jdata.forEach(function(res){
+                            render_chart(res['values'],res['name'],res['name'], 'chart_'+res['type_id'])
+                            });
+                        }
+                        else{
+
+                        }
+
                         loading_end()
                     }
 

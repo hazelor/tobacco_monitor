@@ -25,11 +25,16 @@ class data_history_handler(base_handler):
             sel_device = devices[0]
 
         data_infos = DataParser.get_instance().get_data_types(sel_device.dev_type)
+        if data_infos and len(data_infos)>1:
+            sel_data_info = data_infos[0]
+        else:
+            sel_data_info = None
         return self.render('history.html',
                            page_name = 'history',
                            devices = devices,
                            sel_device = sel_device,
                            data_infos =data_infos,
+                           sel_data = sel_data_info,
                            user_name=usr.name)
 
     def post(self):
@@ -53,10 +58,13 @@ class data_history_query_handler(base_handler):
         for table in tables:
             data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, type_id, start_time, end_time, sub_name = str(table.index)))
         res = {}
-
-        data_info = DataParser.get_instance().get_data_type(dev_id, type_id)
+        print "-------------------------------",dev_id,type_id
+        dev  = Device.get(dev_id)
+        data_info = DataParser.get_instance().get_data_type(dev.dev_type, type_id)
+        print "data_info:--------------",data_info
         res['name'] = data_info['name']
-        res['type_id'] = data_info['type_info']
+        res['type_id'] = data_info['type_id']
+        res['unit'] = data_info['unit']
         res['values'] = []
         for data_item in data_list:
             res['values'].append([data_item.created_at, data_item.value])

@@ -29,7 +29,7 @@ class home_handler(base_handler):
 
     def get_image_summary_info(self, user):
         dev_observed = Device_Observed()
-        res = {'name':user.name,'device_counts': dev_observed.count_user_devices(user.id), 'device_info': []}
+        res = {'user_name':user.name,'device_counts': dev_observed.count_user_devices(user.id), 'device_info': []}
         devices = dev_observed.observed_devices(user.id)
         print devices
         pos = Position_Image()
@@ -58,8 +58,11 @@ class home_handler(base_handler):
         reses = []
         for dev in devices:
             data_content = r.get("col_datas_%s" %(dev.mac))
-            res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
-            reses.append(res)
+            print "data_content:",data_content
+            if data_content:
+                res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
+                res['device_location'] = dev.location
+                reses.append(res)
         return reses
 
     def on_get_summery_info(self, res_image, res_data):

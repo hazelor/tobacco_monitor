@@ -18,7 +18,6 @@ if __name__=="__main__":
         print "device with mac not found!"
 
     pos = Position_Image(position = int(position), object_name=object_name, device_id = dev.id, duration = duration)
-    pos.create_table()
     id= pos.create()
     if id:
         print "add image pos %s OK!" % position

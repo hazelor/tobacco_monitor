@@ -41,6 +41,11 @@ a:hover {
     padding:3px;
 }
 
+.content{
+    margin: 2em;
+    padding: 1em;
+}
+
 .contentleft{
     float: left;
     width: 201px;

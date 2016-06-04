@@ -3,13 +3,12 @@ __author__ = 'guoxiao'
 import serial
 import ctypes, binascii
 from macros import SERIAL_PORT_NAME, SERIAL_PORT_BAUD, SERIAL_PORT_TIMEOUT
-import confUtils
+
 from queueUtils import DataPool
 from commUtils import *
-from confUtils import *
+
 import gpio, time
 
-dev_conf = get_dev_conf()
 
 def init_serial_port():
     ser = serial.Serial(SERIAL_PORT_NAME, SERIAL_PORT_BAUD, timeout=SERIAL_PORT_TIMEOUT)

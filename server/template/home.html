@@ -14,10 +14,11 @@
                 <div class="panel-body">
                     <table class="table table-bordered table-striped">
                     <colgroup>
-                        <col class="col-xs-1">
-                        <col class="col-xs-1">
-                        <col class="col-xs-1">
+                        <col class="col-xs-2">
                         <col class="col-xs-3">
+                        <col class="col-xs-3">
+                        <col class="col-xs-2">
+                        <col class="col-xs-2">
                     </colgroup>
                         <thead>
                             <tr>
@@ -42,12 +43,12 @@
                     </table>
                 </div>
             </div><!--panel panel-default-->
-            <div class="panel panel-default col-lg-6">
+            <div class="panel panel-default col-lg-5 col-lg-offset-1">
                 <div class="panel-heading">设备采集信息概要</div>
                 <div class="panel-body">
                     {%for dev_info in device_data_info%}
                             <div class="panel panel-default">
-                                <div class="panel-heading"></div>
+                                <div class="panel-heading">dev_info['location']</div>
                                 <div class="panel-body">
                                     <table class="table table-bordered table-striped">
                                         <colgroup>

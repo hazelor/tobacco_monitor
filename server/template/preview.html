@@ -10,17 +10,26 @@
 {%block title%}采集数据{%end%}
 
 {%block content%}
-    <div class="row">
-        <select class="combobox form-control" id="selected_device" value="{{sel_dev.id}}" onchange='on_selected_device_change()'>
-            {%for dev in devices%}
-                <option value="{{dev.location}}">{{dev.id}}</option>
-            {%end%}
-        </select>
+<div class="panel panel-default">
+    <div class="panel-heading">设备选择</div>
+    <div class="panel-body">
+        <div class="row col-lg-8">
+            <div class="col-lg-8">
+                <div class="input-group">
+                    <span class="input-group-addon">设备
+                    </span>
+                    <select class="combobox form-control" id="selected_device" value="{{sel_dev.id}}" onchange='on_selected_device_change()'>
+                    {%for dev in devices%}
+                        <option value="{{dev.id}}">{{dev.location}}</option>
+                    {%end%}
+                    </select>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div>
     </div>
-    <br/>
-    <div class="content">
-        {% include device_col_data.html %}
-    </div>
+
+</div>
+{% include device_col_data.html %}
     <div>
         <div class="LoadingBg"></div>
         <div class="Loading_message"></div>

@@ -195,14 +195,14 @@ function selected_history(){
             }
             else{
                 var jdata= $.parseJSON(data)
-                var data = [];
+                var datas = new Array();
                 for (var i=0;i<jdata['values'].length;i++){
                     if(i%count==0){
-                        data.push([jdata['values'][i]);
+                        datas.push(jdata['values'][i]);
                     }
                 }
 
-                render_chart(data, jdata['name'], jdata['name']);
+                render_chart(datas, jdata['name'], jdata['unit']);
                 loading_end()
             }
 

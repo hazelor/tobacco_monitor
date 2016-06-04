@@ -16,10 +16,10 @@ if __name__ == "__main__":
     
     ser = init_serial_port()
     ser = open_serial_port(ser)
-    TProcess = CountDownExec.get_instance('serial_update', duration, exe_collection_datas, args={"serial": ser})
-    UProcess = CountDownExec.get_instance('net_update', duration, exe_update)
+    TProcess = CountDownExec.get_instance('serial_update', 20, exe_collection_datas, args={"serial": ser})
+    UProcess = CountDownExec.get_instance('net_update', 20, exe_update)
     CProcess = CountDownExec.get_instance('ctrl_update', CTRL_UPDATE_DURATION, exe_ctrl)
 
     TProcess.start()
     UProcess.start()
-    CProcess.start()
+    #CProcess.start()
