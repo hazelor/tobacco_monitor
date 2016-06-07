@@ -5,7 +5,18 @@ import threading, time
 import struct
 import socket,struct, fcntl
 import redis
+from macros import CONF_FILE_PATH
+import os
 
+g_data_conf = [] 
+
+def load_data_conf():
+    f = open(CONF_FILE_PATH,'r+')
+    lines = f.readlines()
+    f.close()
+    lines = [line.strip() for line in lines]
+    g_data_conf = eval(''.join(lines))
+    return g_data_conf
 
 def get_ip_address(ifname): 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
@@ -16,8 +27,14 @@ def get_ip_address(ifname):
     )[20:24]) 
 
 def get_mac_address():
-    mac = uuid.UUID(int = uuid.getnode()).hex[-12:]
+    for line in os.popen("/sbin/ifconfig"):
+        if 'eth0' in line:
+            mac = line.split()[4]
+            mac = mac.replace(':','')
+            break
     return mac
+    #mac = uuid.UUID(int = uuid.getnode()).hex[-12:]
+    #return mac
 
 def get_md5(raw_str):
     mdtool = md5.new()
@@ -95,7 +112,9 @@ class CountDownExec(CountDownTimer):
 def bytes_to_int(buf, offset):
     return struct.unpack_from(">I", buf, offset)[0]
 
+def bytes_to_short(buf, offset):
+    return struct.unpack_from(">H", buf, offset)[0]
 
 def bytes_to_float(buf, offset):
-    return struct.unpack_from(">f", buf, offset)[0]
+    return struct.unpack_from("f", buf, offset)[0]
 

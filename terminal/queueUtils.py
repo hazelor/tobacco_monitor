@@ -4,6 +4,41 @@ __author__ = 'guoxiao'
 import Queue, threading
 
 
+class RainfallDataPool:
+    instance = None
+    mutex = threading.Lock()
+
+    def __init__(self, max_size):
+        self.queue = []
+        self.max_size = max_size
+
+    @staticmethod
+    def get_instance(max_size = 180):
+        if RainfallDataPool.instance == None:
+            RainfallDataPool.mutex.acquire()
+            RainfallDataPool.instance = RainfallDataPool(max_size)
+            RainfallDataPool.mutex.release()
+
+        return RainfallDataPool.instance
+
+    def push_data(self, data):
+        RainfallDataPool.mutex.acquire()
+        if len(self.queue) >= self.max_size:
+            self.queue.pop()
+        print "rainfall queue insert the data:",data
+        self.queue.insert(0,data)
+        print "rainfall queue insert the data after:",self.queue
+        RainfallDataPool.mutex.release()
+
+    def get_sum(self):
+        print 'rainfall queue:',self.queue
+        #RainfallDataPoll.mutex.acquire()
+        res = sum(self.queue)
+        print 'rainfall queue res:',res
+        #RainfallDataPool.mutex.release()
+        return res
+        
+
 class DataPool:
     instance = None
     mutex = threading.Lock()

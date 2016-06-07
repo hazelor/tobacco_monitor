@@ -21,23 +21,35 @@ ACTION_TIME = "action_time"
 BACKUP1 = "backup1"
 BACKUP2 = "backup2"
 
-SERVER_URL = "www.thcreate.com"
+SERVER_URL = "localhost"
 UPDATE_PORT = "8080"
 
 DEV_TYPE = "dev_tobacco"
 
-API_DATACHANNEL_URL = "/api/dataChannel"
+API_DATA_URL = "/api/data"
 API_CTRL_URL = "/api/ctrl"
+API_IMAGE_URL = "api/image"
 
 
-SERIAL_PORT_NAME = '/dev/ttyS3'
+SERIAL_PORT_NAME = '/dev/ttyUSB0'
 SERIAL_PORT_BAUD = 9600
 SERIAL_PORT_TIMEOUT = 0.5
 
-RES_SUCCESS = 'Y'
-RES_FAIL = 'N'
+RES_SUCCESS = 'ok'
+RES_FAIL = 'fail'
 
 CTRL_UPDATE_DURATION = 10
 
+ADDRESS_RAINFALL = 404
+ADDRESS_AI = 700
 
+NUM_REGISTER_RAINFALL = 1
+NUM_REGISTER_AI = 8 
 
+FUNC_AI = 3
+FUNC_RAINFALL = 3
+
+SUB_ADDRESS_SIGN = 1
+
+CONF_FILE_PATH = "device_infos.conf"
+CAPTURED_DIR = "/home/sonic513/cam_survilliance_server/static/img/captured"

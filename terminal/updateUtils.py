@@ -15,7 +15,7 @@ import redis
 
 
 def update_data(c_data):
-    url = "http://{0}:{1}{2}".format(SERVER_URL, UPDATE_PORT, API_DATACHANNEL_URL)
+    url = "http://{0}:{1}{2}".format(SERVER_URL, UPDATE_PORT, API_DATA_URL)
     j_data = json.dumps(c_data)
     req = urllib2.Request(url, j_data)
     try:
@@ -68,7 +68,6 @@ def update_ctrl():
 def exe_update(args):
     dp = DataPool.get_instance()
     length = dp.get_len() if dp.get_len()<10 else 10
-    print 'len:',dp.get_len()
 
     c_datas = []
     for i in range(length):
@@ -77,11 +76,11 @@ def exe_update(args):
             c_datas.append(res)
     if c_datas:
         res = update_data(c_datas)
-        print 'res:',res
         if not res:
-	    dp.g_counts_reboot+=1
-            if dp.g_counts_reboot>10:
-               os.system("sudo reboot")
+	    #dp.g_counts_reboot+=1
+            #if dp.g_counts_reboot>10:
+            #   os.system("sudo reboot")
+            print dp.get_len() 
             for cd in c_datas:
                 dp.push_data(cd)
 

@@ -3,8 +3,10 @@ __author__ = 'guoxiao'
 import serial
 import ctypes, binascii
 from macros import SERIAL_PORT_NAME, SERIAL_PORT_BAUD, SERIAL_PORT_TIMEOUT
+from macros import ADDRESS_RAINFALL, ADDRESS_AI, NUM_REGISTER_RAINFALL, NUM_REGISTER_AI, FUNC_RAINFALL, FUNC_AI
+from macros import SUB_ADDRESS_SIGN
 
-from queueUtils import DataPool
+from queueUtils import DataPool, RainfallDataPool
 from commUtils import *
 
 import gpio, time
@@ -35,7 +37,7 @@ def intToHexString(data):
     return s[2::]
 
 
-def intArrayToString(array):
+def int_array_to_string(array):
     if len(array) == 0:
         return ""
     s=""
@@ -66,7 +68,7 @@ def CRC16(data):
     return (CRC16Hi<<8)|CRC16Lo
 
 
-def formCommand(addr, code, start_pos, num_pos):
+def form_command(addr, code, start_pos, num_pos):
     data=[]
     data.append(addr)
     data.append(code)
@@ -81,35 +83,56 @@ def formCommand(addr, code, start_pos, num_pos):
 
 
 def exe_collection_datas(args):
-    ser = args['serial']
-    command = formCommand(1, 3, 0, 72)
-    hexer = intArrayToString(command).decode("hex")
-    ser.write(hexer)
-    ans = ser.readall()
-    construct_datas(ans)
+    try:
+        ser = args['serial']
+        rainfall_command = form_command(SUB_ADDRESS_SIGN, FUNC_RAINFALL, ADDRESS_RAINFALL, NUM_REGISTER_RAINFALL)
+        hexer = int_array_to_string(rainfall_command).decode("hex")
+        ser.write(hexer)
+        ans = ser.readall()
+        rainfall_value = construct_rainfall_datas(ans)
+        AI_command = form_command(SUB_ADDRESS_SIGN, FUNC_AI, ADDRESS_AI, NUM_REGISTER_AI)
+        hexer = int_array_to_string(AI_command).decode('hex')
+        ser.write(hexer)
+        ans = ser.readall()
+        ai_value = construct_ai_datas(ans)
+        #print "ai value:",ai_value
+    
+        res = {}
+        res['mac'] = get_mac_address()
+        res['data_content'] = {}
+        res['data_content']['date'] = time.time()
+        ai_value.extend(rainfall_value)
+        res['data_content']['content'] = ai_value
+        print res
+        DataPool.get_instance().push_data(res)
+    except:
+        pass
+    
+    
 
-
-def construct_datas(ans):
+def construct_rainfall_datas(ans):
     start_pos = 3
+    try:
+        res = bytes_to_short(ans, start_pos)
+        RainfallDataPool.get_instance().push_data(res)
+        return [RainfallDataPool.get_instance().get_sum()]
+    except:
+        pass
 
-    mac_md5 = get_md5(get_mac_address())
-    date = time.time()
-
-
-    for pos_content in dev_conf:
-        c_res = {}
-        c_res['mac_address'] = mac_md5
-        c_res['date'] = date
-        c_res['position'] = pos_content['position']
-        c_res['data'] = {}
-	try:
-            for data_content in pos_content['contents']:
-                c_res['data'][data_content['name']] = bytes_to_float(ans, data_content['start_pos']+start_pos)
-            print 'tag:------------', c_res
-            DataPool.get_instance().push_data(c_res)
-	except:
-	    pass
-    #DataPool.get_instance().push_data(c_res)
+def construct_ai_datas(ans):
+    g_data_conf = load_data_conf()
+    start_pos = 3
+    res = []
+    try:
+        for data_info in g_data_conf:
+            d = bytes_to_short(ans, data_info['start_pos']*2+start_pos)
+            print d
+            d = float(d)
+            d = (d-data_info['min_origin'])/(data_info['max_origin']-data_info['min_origin'])*(data_info['max_value']-data_info['min_value'])+data_info['min_value']
+            res.append(d)
+        return res
+    except:
+        pass
 
 
 if __name__ == '__main__':
