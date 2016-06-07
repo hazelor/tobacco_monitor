@@ -91,13 +91,12 @@ function loading_end(){
 function render_chart(datas, title, title_y){
     Highcharts.setOptions({
             global: {
-                useUTC: false
+                useUTC: true
             }
         });
 
         $('#chart_history').highcharts({
             chart: {
-
                 type: 'spline',                      //曲线样式
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
@@ -197,9 +196,9 @@ function selected_history(){
                 var jdata= $.parseJSON(data)
                 var datas = new Array();
                 for (var i=0;i<jdata['values'].length;i++){
-                    if(i%count==0){
+                    //if(i%count==0){
                         datas.push(jdata['values'][i]);
-                    }
+                    //}
                 }
 
                 render_chart(datas, jdata['name'], jdata['unit']);

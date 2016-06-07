@@ -43,18 +43,14 @@ function on_selected_device_change(){
                     else{
                         var jdata= $.parseJSON(data);
                         if(jdata.length >0){
-                            jdata.forEach(function(res){
-                            render_chart(res['values'],res['name'],res['name'], 'chart_'+res['type_id'])
-                            });
+                            for(var i = 0;i<jdata.length;i++){
+                            render_chart(jdata[i]['values'],jdata[i]['name'],jdata[i]['name'], 'chart_'+jdata[i]['type_id'])
+                            }
                         }
-                        else{
-
-                        }
-
-                        loading_end()
                     }
 
-                },
+                        loading_end()
+                    },
                 error:function(jqXHR, textStatus, errorThrown){
                     loading_end();
                 }
@@ -160,7 +156,7 @@ function render_chart(datas, title, title_y, type_id){
             }
         });
 
-        $('#chart_'+type_id).highcharts({
+        $('#'+type_id).highcharts({
             chart: {
 
                 type: 'spline',                      //曲线样式
