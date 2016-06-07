@@ -48,12 +48,14 @@
                 <div class="panel-body">
                     {%for dev_info in device_data_info%}
                             <div class="panel panel-default">
-                                <div class="panel-heading">dev_info['location']</div>
+                                <div class="panel-heading">{{dev_info['location']}}</div>
                                 <div class="panel-body">
                                     <table class="table table-bordered table-striped">
                                         <colgroup>
-                                            <col class="col-xs-1">
                                             <col class="col-xs-3">
+                                            <col class="col-xs-3">
+                                            <col class="col-xs-3">
+
                                         </colgroup>
                                         <thead>
                                             <tr>
@@ -62,13 +64,13 @@
                                                 <th>单位</th>
                                             </tr>
                                         </thead>
-                                        <tr>
                                         {%for data_content in dev_info['content'] %}
+                                        <tr>
                                             <td class="active">{{data_content['name']}}</td>
                                             <td>{{data_content['value']}}</td>
                                             <td>{{data_content['unit']}}</td>
-                                        {%end%}
                                         </tr>
+                                        {%end%}
                                     </table>
                                 </div>
                             </div>
