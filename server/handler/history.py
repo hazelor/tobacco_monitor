@@ -58,16 +58,14 @@ class data_history_query_handler(base_handler):
         for table in tables:
             data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, type_id, start_time, end_time, sub_name = str(table.index)))
         res = {}
-        print "-------------------------------",dev_id,type_id
         dev  = Device.get(dev_id)
         data_info = DataParser.get_instance().get_data_type(dev.dev_type, type_id)
-        print "data_info:--------------",data_info
         res['name'] = data_info['name']
         res['type_id'] = data_info['type_id']
         res['unit'] = data_info['unit']
         res['values'] = []
         for data_item in data_list:
-            res['values'].append([data_item.created_at, data_item.value])
+            res['values'].append([data_item.created_at*1000, data_item.value])
         return res
 
     def get(self):
@@ -78,12 +76,16 @@ class data_history_query_handler(base_handler):
         end_time=self.get_argument('end_time')+':00'
         end_time = time.mktime(time.strptime(end_time, '%Y-%m-%d %H:%M:%S'))
         tables = Data_Table_Map.get_tables(start_time, end_time)
+
         if type_id != "":
             res = self.get_data_info(tables, type_id, dev_id, start_time, end_time)
             self.write(json.dumps(res))
         else:
-            datas_info = DataParser.get_instance().get_data_types(dev_id)
+            dev = Device.get(dev_id)
+            datas_info = DataParser.get_instance().get_data_types(dev.dev_type)
+            print "tables:---------",datas_info
             reses = []
             for di in datas_info:
+                print di['type_id']
                 reses.append(self.get_data_info(tables, di['type_id'], dev_id, start_time, end_time))
             self.write(json.dumps(reses))

@@ -45,8 +45,9 @@ class data_preview_realtime_handler(base_handler):
         dev = Device.get(sel_device_id)
         if dev:
             r  = redis.Redis()
-            data_content = r.hget("col_datas_%s" %(dev.mac))
-            res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
+            data_content = r.get("col_datas_%s" %(dev.mac))
+            data_content = eval(data_content)
+            res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date']*1000)
             res = json.dumps(res)
             self.write(res)
             return self.finish()
