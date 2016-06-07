@@ -9,6 +9,7 @@ handlers = [
     (r'/data/history',data_history_handler),
     (r'/data/history/query', data_history_query_handler),
     (r'/api/data', api_data_handler),
+    (r'/api/image', api_image_handler),
     (r'/login', login_handler),
     (r'/logout', logout_handler),
     (r'/setting', setting_handler),

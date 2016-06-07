@@ -5,7 +5,7 @@ import sys
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3307)
+    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3306)
 
 if __name__=="__main__":
     connect_db()
