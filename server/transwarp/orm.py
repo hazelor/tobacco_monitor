@@ -285,7 +285,7 @@ class Model(dict):
         Find by where clause and return list.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
 
@@ -310,7 +310,7 @@ class Model(dict):
         Find by 'select count(pk) from table where ... ' and return int.
         '''
         if kwargs.has_key('sub_name'):
-            sub_name = args['sub_name']
+            sub_name = kwargs['sub_name']
         else:
             sub_name = ""
 

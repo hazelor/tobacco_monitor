@@ -45,6 +45,6 @@ class Device(Model):
 
         device = self.find_first('where mac = ?', mac)
         if device:
-            return device.id
+            return device
         return None
 

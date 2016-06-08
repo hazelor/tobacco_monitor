@@ -4,6 +4,7 @@ from transwarp.db import next_id
 from transwarp.orm import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 import time,os
 import json
+import redis
 from util.marcos import DATA_INFOS_FILE_PATH, MAX_TABLE_LINES
 from util import *
 from transwarp import db
@@ -48,20 +49,24 @@ class DataParser():
                     if data_info['type_id'] == type_id.strip():
                         return data_info
         return {}
-    def parse_dev(self,  table_index, position_id, dev_type, data_content):
+    def parse_dev(self,  table_index, dev_id, dev_type, data_content):
+        table_index = int(table_index)
         for dev_info in self._data_infos:
             if dev_info['dev_type'] == dev_type.strip():
                 for index in range(min(len(data_content), len(dev_info['data_content']))):
-                    d = Data(position_id = position_id, type_id = dev_info['data_content'][index]['type_id'], value = data_content[index])
+                    d = Data(device_id = dev_id, type_id = dev_info['data_content'][index]['type_id'], value = data_content[index])
                     if d.count_all(sub_name = str(table_index)) > MAX_TABLE_LINES:
                         table_index+=1
-                        Data.create(sub_name=str(table_index))
-                        dtm = Data_Table_Map(end_time = time.time, index = table_index)
-                        dtm.insert()
+                        cdtm = Data_Table_Map.find_first("where `index` = ?", table_index)
+                        if cdtm == None:
+                            Data_Table_Map.add_table(table_index)
+                        #Data.create(sub_name=str(table_index))
+                        #dtm = Data_Table_Map(end_time = time.time, index = table_index)
+                        #dtm.insert()
 
                     d.insert(sub_name=str(table_index))
-                    cdtm = Data_Table_Map.find_first('where index = ?', table_index)
-                    cdtm.end_time = time.time
+                    cdtm = Data_Table_Map.find_first("where `index` = ?", table_index)
+                    cdtm.end_time = time.time()
                     cdtm.update()
 
     def parse_to_json(self, dev_type, data_content, date):
@@ -95,27 +100,34 @@ class Data_Table_Map(Model):
         if cls.count_all() == 0:
             return 0
         else:
-            data_table = cls.find_first('order start_time desc')
+            data_table = cls.find_first('order by start_time desc')
             if data_table:
                 return data_table.index
             else:
                 return 0
     @classmethod
-    def add_table(cls):
-        index = cls.get_last_table_index()
+    def add_table(cls,index):
+        r = redis.Redis()
+        dt = Data()
+        dt.create_table(sub_name = str(index))
+        r.set("last_table_index",index)
         new_table = Data_Table_Map()
         new_table.end_time = time.time()
-        new_table.index = index+1
+        new_table.index = index
         new_table.insert()
+    
+    
 
     @classmethod
     def get_tables(cls, start_time, end_time):
-        return cls.find_by('where start_time<? and end_time>?', start_time, end_time)
+        return cls.find_by('where start_time<? or end_time>?', end_time, start_time)
 
      
 
 
 
 if __name__=="__main__":
-    db.create_engine('sonic513', 'sonic513', 'collection_test', host='127.0.0.1',port='3307')
+    db.create_engine('sonic513', 'sonic513', 'tobacco_monitor', host='127.0.0.1',port='3306')
+    dtm = Data_Table_Map()
+    print dtm.find_first("where 'index'=?",index)
 
