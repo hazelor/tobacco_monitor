@@ -84,6 +84,7 @@ class img_preview_handler(base_handler):
                 current_position_id = positions[0].id
             else:
                 current_position_id = 0
+        print "used position id:",current_position_id
         total_image_num = image.count_by_position_id(current_position_id)
         total_page_num = total_image_num/IMAGE_NUMBER_FOR_PAGE+1
         start_image_num = (current_page - 1)*IMAGE_NUMBER_FOR_PAGE + 1
@@ -91,7 +92,8 @@ class img_preview_handler(base_handler):
         if total_page_num < current_page:
             current_page = total_page_num
 
-        images = image.find_by('order by id desc limit ? offset ?',
+        images = image.find_by('where `position_id`=? order by `created_at` desc limit ? offset ?',
+                               current_position_id,
                                IMAGE_NUMBER_FOR_PAGE,
                                (current_page - 1)*IMAGE_NUMBER_FOR_PAGE)
         for img in images:
@@ -110,6 +112,7 @@ class img_preview_handler(base_handler):
                 start_page_num = 1
 
         end_image_num  = start_image_num+len(images)-1
+        print "image num:",total_image_num
 
         return self.render('browser.html',
                            page_name='browser',

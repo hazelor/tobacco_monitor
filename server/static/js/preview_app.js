@@ -19,6 +19,7 @@ function on_selected_device_change(){
     }
 
     if ($('#selected_device').children('option:selected').val() != ''){
+        document.getElementById('data_table').innerHTML = '';
         //var title = {
         //    text:$('#chamber_name').children('option:selected').text()
         //}
@@ -29,7 +30,7 @@ function on_selected_device_change(){
         $.ajax({
                 url:'history/query',
                 type:'GET',
-                timeout: 2000,
+                timeout: 10000,
                 dataType:'text',
                 data:{'dev_id':$('#selected_device').children('option:selected').attr('value'),
                       'start_time':start_time,
@@ -44,7 +45,7 @@ function on_selected_device_change(){
                         var jdata= $.parseJSON(data);
                         if(jdata.length >0){
                             for(var i = 0;i<jdata.length;i++){
-                            render_chart(jdata[i]['values'],jdata[i]['name'],jdata[i]['name'], 'chart_'+jdata[i]['type_id'])
+                            render_chart(jdata[i]['values'],jdata[i]['name'],jdata[i]['unit'], 'chart_'+jdata[i]['type_id'])
                             }
                         }
                     }
