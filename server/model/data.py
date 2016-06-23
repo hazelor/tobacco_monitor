@@ -120,7 +120,7 @@ class Data_Table_Map(Model):
 
     @classmethod
     def get_tables(cls, start_time, end_time):
-        return cls.find_by('where start_time<? or end_time>?', end_time, start_time)
+        return cls.find_by('where start_time<? and end_time>?', end_time, start_time)
 
      
 

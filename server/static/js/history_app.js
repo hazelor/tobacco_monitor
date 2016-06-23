@@ -91,7 +91,7 @@ function loading_end(){
 function render_chart(datas, title, title_y){
     Highcharts.setOptions({
             global: {
-                useUTC: true
+                useUTC: false
             }
         });
 
