@@ -3,6 +3,7 @@
 <link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap-datetimepicker.min.css">
 <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="/static/css/history_app.css">
+<script src="/static/js/charts_app.js"></script>
 <script src="/static/js/history_app.js"></script>
 
 <!--<link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">-->
@@ -43,7 +44,7 @@
         </div>
     </div>
     <script>
-        $(".form_datetime").datetimepicker({format:"yyyy-mm-dd hh:ii"})
+        $(".form_datetime").datetimepicker({format:"yyyy-mm-dd hh:ii", minView: 'hour', maxView:'month', startView: 'day'})
     </script>
     <div class="panel panel-default">
         <div class="panel-heading">历史数据浏览</div>

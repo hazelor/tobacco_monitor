@@ -3,11 +3,9 @@
     <div class="panel panel-default">
         <div class="panel-heading">采集数据信息</div>
         <div class="panel-body">
-            <div class="col-lg-8">
+            <div class="col-lg-8" id="charts">
                 <!--draw pic-->
-                {% for data_info in datas_infos %}
-                    <div id="chart_{{data_info["type_id"]}}"></div>
-                {%end%}
+
 
             </div>
             <div class="col-lg-4">

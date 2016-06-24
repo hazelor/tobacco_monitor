@@ -5,6 +5,7 @@ from model.data import Data_Table_Map, Data, DataParser
 from model.device_observed import Device_Observed
 from model.device import Device
 
+from util.marcos import TIME_HOUR_FORMAT,RAINFALL_PRE_SHOT
 import tornado
 import tornado.web
 
@@ -57,16 +58,55 @@ class data_history_query_handler(base_handler):
         data_list = []
         for table in tables:
             data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, type_id, start_time, end_time, sub_name = str(table.index)))
-        res = {}
+
         dev  = Device.get(dev_id)
         data_info = DataParser.get_instance().get_data_type(dev.dev_type, type_id)
+
+        if data_info['duration'] == 0:
+            return self.deal_for_single(data_list, data_info)
+
+        if data_info['duration'] > 0:
+            return self.deal_for_accumulate(data_list, data_info)
+
+
+
+    def deal_for_single(self, data_list, data_info):
+        res = {}
         res['name'] = data_info['name']
         res['type_id'] = data_info['type_id']
         res['unit'] = data_info['unit']
+        res['duration'] = data_info['duration']
         res['values'] = []
         for data_item in data_list:
             res['values'].append([data_item.created_at*1000, data_item.value])
         return res
+
+
+    def deal_for_accumulate(self, data_list, data_info):
+        res = {}
+        res['name'] = data_info['name']
+        res['type_id'] = data_info['type_id']
+        res['unit'] = data_info['unit']
+        res['duration'] = data_info['duration']
+
+
+        #data_list = sorted(data_list, key=lambda di: di.created_at)
+        res_dict = {}
+        for di in data_list:
+            di.created_at = time.strftime(TIME_HOUR_FORMAT, time.localtime(di.created_at))
+            di.created_at = time.mktime(time.strptime(di.created_at, TIME_HOUR_FORMAT))
+            if res_dict.has_key(di.created_at*1000):
+                res_dict[di.created_at*1000] = res_dict[di.created_at*1000] + di.value*RAINFALL_PRE_SHOT
+            else:
+                res_dict[di.created_at*1000] = di.value*RAINFALL_PRE_SHOT
+
+
+        res['values'] = res_dict.items()
+
+        #for data_item in data_list:
+        #    res['values'].append([data_item.created_at*1000, data_item.value])
+        return res
+
 
     def get(self):
         dev_id = self.get_argument('dev_id','')
@@ -83,9 +123,9 @@ class data_history_query_handler(base_handler):
         else:
             dev = Device.get(dev_id)
             datas_info = DataParser.get_instance().get_data_types(dev.dev_type)
-            print "tables:---------",datas_info
+            #print "tables:---------",datas_info
             reses = []
             for di in datas_info:
-                print di['type_id']
+                #print di['type_id']
                 reses.append(self.get_data_info(tables, di['type_id'], dev_id, start_time, end_time))
             self.write(json.dumps(reses))

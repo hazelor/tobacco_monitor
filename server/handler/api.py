@@ -11,6 +11,7 @@ from model.device import Device
 from model.image import Image
 from util import *
 from util.marcos import *
+from model.device import DeivceStatusChecker
 
 class api_data_handler(base_handler):
     def post(self):
@@ -38,6 +39,7 @@ class api_data_handler(base_handler):
             content = data_content['content']
             dev = Device()
             dev = dev.get_device_by_mac(device_mac)
+            DeivceStatusChecker.get_instance().reset_status(device_mac)
             DataParser.get_instance().parse_dev(index, dev.id, dev.dev_type,  content)
         self.write('ok')
 

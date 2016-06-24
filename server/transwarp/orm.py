@@ -264,7 +264,7 @@ class Model(dict):
         else:
             sub_name = ""
 
-        L = db.select('select * from `%s%s`' % cls.__table__, sub_name)
+        L = db.select('select * from `%s%s`' % (cls.__table__, sub_name))
         return [cls(**d) for d in L]
 
     # need to change!!!!

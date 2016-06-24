@@ -10,7 +10,7 @@ from queueUtils import DataPool, RainfallDataPool
 from commUtils import *
 
 import gpio, time
-
+import random
 
 def init_serial_port():
     ser = serial.Serial(SERIAL_PORT_NAME, SERIAL_PORT_BAUD, timeout=SERIAL_PORT_TIMEOUT)
@@ -87,14 +87,16 @@ def exe_collection_datas(args):
         ser = args['serial']
         rainfall_command = form_command(SUB_ADDRESS_SIGN, FUNC_RAINFALL, ADDRESS_RAINFALL, NUM_REGISTER_RAINFALL)
         hexer = int_array_to_string(rainfall_command).decode("hex")
-        ser.write(hexer)
-        ans = ser.readall()
-        rainfall_value = construct_rainfall_datas(ans)
+        #ser.write(hexer)
+        #ans = ser.readall()
+        #rainfall_value = construct_rainfall_datas(ans)
+        rainfall_value=[random.random()]
         AI_command = form_command(SUB_ADDRESS_SIGN, FUNC_AI, ADDRESS_AI, NUM_REGISTER_AI)
         hexer = int_array_to_string(AI_command).decode('hex')
-        ser.write(hexer)
-        ans = ser.readall()
-        ai_value = construct_ai_datas(ans)
+        #ser.write(hexer)
+        #ans = ser.readall()
+        #ai_value = construct_ai_datas(ans)
+        ai_value = [random.random() for i in range(7)]
         #print "ai value:",ai_value
     
         res = {}
@@ -114,8 +116,9 @@ def construct_rainfall_datas(ans):
     start_pos = 3
     try:
         res = bytes_to_short(ans, start_pos)
-        RainfallDataPool.get_instance().push_data(res)
-        return [RainfallDataPool.get_instance().get_sum()]
+        return [res]
+        #RainfallDataPool.get_instance().push_data(res)
+        #return [RainfallDataPool.get_instance().get_sum()]
     except:
         pass
 

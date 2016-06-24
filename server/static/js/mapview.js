@@ -1,0 +1,116 @@
+(function(root){
+"use strict";
+var licor = root.licor,
+    _ = root._,
+    Backbone = root.Backbone,
+    OpenLayers = root.OpenLayers,
+    MapView = Backbone.View.extend({
+
+      collection: licor.stations,
+      el: '#map',
+
+      initialize: function(){
+        this.listenTo(this.collection, 'reset', this.render);
+        this.map = new OpenLayers.Map(this.el, {projection:"EPSG:3857"});
+        this.popupTemplate = _.template(this.$('#map-popup-template').html(), null, {variable:'model'});
+
+        this.colors = ["#aaaaaa", "#66a50f", "#ff8b61", "#ff3c3c"];
+        this.statuses = ["Inactive", "OK", "Warning", "Error"];
+
+        this.osm = new OpenLayers.Layer.OSM("OpenStreetMap", [
+          '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+          '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+          '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
+        this.toMercator = OpenLayers.Projection.transforms['EPSG:4326']['EPSG:3857'];
+        this.center = this.toMercator({y:39.913,x:116.391});
+      },
+
+      events: {
+        'click .olControlZoomIn': 'zoomIn',
+        'click .olControlZoomOut': 'zoomOut'
+      },
+
+      zoomIn: function(){
+        return this.map.zoomIn();
+      },
+
+      zoomOut: function(){
+        return this.map.zoomOut();
+      },
+
+      render: function(){
+        var view = this,
+        map = view.map;
+
+        var features = view.collection.map(function(val) {
+          var loc = val.get('location') || {};
+          return new OpenLayers.Feature.Vector(
+            view.toMercator(new OpenLayers.Geometry.Point(loc.longitude, loc.latitude)),
+              {
+                 id: val.get('id'),
+                 name : val.get('name'),
+                 status: view.statuses[val.get('status')],
+                 abbreviation : val.get('abbreviation'),
+                 location_description : val.get('location_description'),
+                 ecosystem : val.get('ecosystem')
+              },
+              {
+                 fillColor : view.colors[val.get('status')],
+                 fillOpacity : 0.8,
+                 strokeColor : '#4d4d4d',
+                 strokeOpacity : 1,
+                 strokeWidth : 1,
+                 pointRadius : 8
+              });
+        });
+        // create the layer with listeners to create and destroy popups
+        var vector = new OpenLayers.Layer.Vector("Points",{
+          eventListeners:{
+
+            'featureselected':function(evt){
+              var feature = evt.feature;
+              var popup = new OpenLayers.Popup.FramedCloud("popup",
+                    OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+                    null,
+                    view.popupTemplate(feature.attributes),
+                    null,
+                    true);
+              feature.popup = popup;
+              map.addPopup(popup);
+
+              if(licor.currentUser){
+                OpenLayers.Event.observe(view.el, 'mousedown', function(evt) {
+                    location.href=licor.stations.url+feature.attributes.id;
+                  }, false);
+              }
+            },
+
+            'featureunselected':function(evt){
+              var feature = evt.feature;
+              map.removePopup(feature.popup);
+              feature.popup.destroy();
+              feature.popup = null;
+            }
+          }
+        });
+
+        vector.addFeatures(features);
+
+        // create the select feature control
+        var selector = new OpenLayers.Control.SelectFeature(vector,{
+          hover:true,
+          autoActivate:true
+        });
+
+        map.addLayers([view.osm, vector]);
+        map.addControl(selector);
+        var extent = vector.getDataExtent();
+        if(extent && !_.isNaN(extent.left)){
+          map.zoomToExtent(extent);
+        } else {
+          map.setCenter(new OpenLayers.LonLat(view.center.x, view.center.y), 3);
+        }
+      }
+});
+new MapView();
+})(this);

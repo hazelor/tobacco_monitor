@@ -2,12 +2,24 @@
  * Created by guoxiao on 16/2/27.
  */
 var sign;
+var chart_info;
+
+function get_data_by_type_id(jdata, type_id){
+    for(var i = 0;i<jdata.length;i++){
+        if(jdata[i]['type_id']==type_id)
+        {
+            return jdata[i];
+        }
+    }
+    return null;
+}
+
 function on_selected_device_change(){
     //render_chart([[],[]])
     var date = new Date()
     var end_time = date.pattern("yyyy-MM-dd hh:mm");
     var date_milliseconds = date.getTime();
-    date_milliseconds -= 1000*60*19;
+    date_milliseconds -= 1000*60*60*24;
     date = new Date(date_milliseconds);
     var start_time = date.pattern("yyyy-MM-dd hh:mm");
     //var chart = $('#container').highcharts()
@@ -17,6 +29,13 @@ function on_selected_device_change(){
     if(sign){
         clearInterval(sign)
     }
+
+    var inner_HTML_str = "";
+    for(var i=0;i<chart_info.length;i++)
+    {
+        inner_HTML_str = inner_HTML_str+"<div id='"+ chart_info[i]['container_id']+"'></div>"
+    }
+    document.getElementById("charts").innerHTML = inner_HTML_str;
 
     if ($('#selected_device').children('option:selected').val() != ''){
         document.getElementById('data_table').innerHTML = '';
@@ -44,9 +63,18 @@ function on_selected_device_change(){
                     else{
                         var jdata= $.parseJSON(data);
                         if(jdata.length >0){
-                            for(var i = 0;i<jdata.length;i++){
-                            render_chart(jdata[i]['values'],jdata[i]['name'],jdata[i]['unit'], 'chart_'+jdata[i]['type_id'])
+                            for(var i = 0;i<chart_info.length;i++){
+                                var datas = new Array();
+                                for(var j=0;j<chart_info[i]['data_type_ids'].length;j++){
+                                    var data = {'name':'', 'data':[]}
+                                    var jd = get_data_by_type_id(jdata,chart_info[i]['data_type_ids'][j]);
+                                    data['name'] = jd['name'];
+                                    data['data'] = jd['values'];
+                                    datas.push(data)
+                                }
+                                render_chart(datas,chart_info[i]['title'], chart_info[i]['unit'],chart_info[i]['plot_type'], chart_info[i]['container_id']);
                             }
+
                         }
                     }
 
@@ -67,28 +95,36 @@ function on_selected_device_change(){
                          },
                     success:function(data, status){
                         var data = $.parseJSON(data);
-                        var current_date = data['date'];
-                        var data_content = data['content'];
+
+                        var data_content = data;
                         if(data_content){
-                            var innerHTML_str = '<colgroup><col class="col-xs-1"><col class="col-xs-3"></colgroup><thead><tr><th>项目</th><th>信息</th></tr></thead>';
+                            var innerHTML_str = '<colgroup><col class="col-xs-2"><col class="col-xs-2"><col class="col-xs-2"></colgroup><thead><tr><th>项目</th><th>信息</th><th>单位</th></tr></thead>';
                             for(var i =0; i<data_content.length;i++){
-                                var chart = $('#chart_'+data_content[i]['type_id']).highcharts();
-                                var series = chart.series;
-                                serie_1_len = series[0].data.length;
-                                if(serie_1_len != 0){
-                                    var plot_data = [current_date, data_content[i]['value']];
-                                    if(series[0].data[serie_1_len-1]['x'] != plot_data[0]){
-                                        if(plot_data[0]-series[0].data[0]['x']>=20*60*1000){
-                                            series[0].addPoint(plot_data,true,true)
+                                for(var j=0;j<chart_info.length;j++)
+                                {
+                                    var series_index = chart_info[j]['data_type_ids'].indexOf(data_content[i]['type_id'])
+                                    if(series_index >=0)
+                                    {
+                                        var chart = $('#'+chart_info[j]['container_id']).highcharts();
+                                        var series = chart.series;
+                                        serie_1_len = series[series_index].data.length;
+                                        if(serie_1_len != 0){
+                                            var plot_data = [data_content[i]['date'], data_content[i]['value']];
                                         }
-                                        else{
-                                            series[0].addPoint(plot_data,true,false)
+                                        if(series[series_index].data[serie_1_len-1]['x'] != plot_data[0]){
+                                            if(plot_data[0]-series[series_index].data[0]['x']>=20*60*1000){
+                                                series[series_index].addPoint(plot_data,true,true)
+                                            }
+                                            else{
+                                                series[series_index].addPoint(plot_data,true,false)
+                                            }
                                         }
                                     }
                                 }
+
                                 var value = parseFloat(data_content[i]['value']);
-                                value = value.toFixed(2);
-                                innerHTML_str = innerHTML_str + '<tr>'+'<td>'+data_content[i]['name']+'</td>'+'<td>'+value+'</td>'+'</tr>'
+                                value = value.toFixed(1);
+                                innerHTML_str = innerHTML_str + '<tr>'+'<td>'+data_content[i]['name']+'</td>'+'<td>'+value+'</td>'+'<td>'+data_content[i]['unit']+'</td>'+'</tr>'
 
                             }
                             document.getElementById('data_table').innerHTML = innerHTML_str;
@@ -132,6 +168,18 @@ $(function(){
     //$(function(){
     //    render_chart()
     //    });
+    $.ajax({
+        url:'/data/conf',
+        type:'get',
+        dataType:'text',
+        timeout:1800,
+        data:{'created_at':new Date()},
+        success:function(data,status){
+            var data = $.parseJSON(data);
+            chart_info = data;
+            on_selected_device_change();
+        }
+    })
     on_selected_device_change()
 });
 
@@ -150,63 +198,6 @@ function loading_end(){
 
 
 
-function render_chart(datas, title, title_y, type_id){
-    Highcharts.setOptions({
-            global: {
-                useUTC: false
-            }
-        });
-
-        $('#'+type_id).highcharts({
-            chart: {
-
-                type: 'spline',                      //曲线样式
-                animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
-            },
-            title:{
-                text:title
-            },
-
-            xAxis: {
-                type: 'datetime',
-                minRange:60*60*1000
-                //minRange:60*1000
-
-            },
-            yAxis: {
-                title: {
-                    text: title_y
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color:'blue'
-                    //color: '#808080'
-                }]
-            },
-            tooltip: {
-                backgroundColor:'#fff',
-                borderColor:'black',
-                formatter: function () {        //数据提示框中单个点的格式化函数
-                    return '<b>' + this.series.name+ '</b><br/>' +
-                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 3);   //小数后几位
-                }
-            },
-            legend: {
-                enabled: true
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [
-                {
-                    name: title,
-                    data:datas
-                }]
-        })
-}
 
 Date.prototype.pattern=function(fmt) {
     var o = {
