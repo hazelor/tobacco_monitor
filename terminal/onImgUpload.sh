@@ -7,16 +7,23 @@
     #  Aborn Jiang (aborn.jiang@gmail.com)  
     #  Sep.8, 2013  
     ################################################################  
-      
-    EVENTPATH="/home/uftp/TOBACCO_ZUNYI_CAMERA/"  
-    STATICPATH="/home/sonic513/cam_survilliance_server/static/img/captured/"
+    cd "/home/linaro/tobacco_monitor/terminal"
+    ldconfig  
+    EVENTPATH="/home/uftp/"  
+    STATICPATH="/home/linaro/tobacco_monitor/terminal/img/captured/"
     MSG="./.inotifymsg"  
     RES="./.res"
     PATTERN=".jpg$"          # only when the rpm files changed.  
-    while inotifywait -e create -e delete -r ${EVENTPATH} 1>${MSG} 2>/dev/null; do  
+    while inotifywait -e close  -r ${EVENTPATH} 1>${MSG} 2>/dev/null; do  
+        
         FILE=`cat ${MSG} |egrep ${PATTERN} | awk '{print $3}' `  
         ACTION=`cat ${MSG} |egrep ${PATTERN} | awk '{print $2}' `  
         [ ! -z ${FILE} ] && \  
-        cp "${EVENTPATH}/${FILE}" "${STATICPATH}/${FILE}" && \  
+        mv "${EVENTPATH}/${FILE}" "${STATICPATH}/${FILE}" && \  
         ./action.sh ${FILE}
+        FILE_COUNT=`ls -l|grep "jpg"|wc -l`
+        if [ $FILE_COUNT -gt 16*2*300];then
+            FILE_NAME=`ls -rt ${STATICPATH}|head -1`
+            rm -rf "${STATICPATH}/${FILE_NAME}" 
+        fi
     done  

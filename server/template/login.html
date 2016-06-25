@@ -1,11 +1,21 @@
 {%extends "base.html" %}
 {% block metadata%}
-
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/style.css">
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/site.css">
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/map-style.css">
+<link rel="stylesheet" type="text/css" media="screen" href="/static/js/theme/default/style.css">
+<script src="/static/js/json2-min.js"></script>
+<script src="/static/js/underscore-min.js"></script>
+<script src="/static/js/backbone-min.js"></script>
+<script src="/static/js/models.js"></script>
+<script src="/static/js/OpenLayers.light.debug.js"></script>
+<script src="/static/js/Events.js"></script>
+<script src="/static/js/mapview.js"></script>
 {%end%}
 {%block title%}登陆{%end%}
 
 {%block content%}
-<div class='row col-lg-4 col-lg-offset-4'>
+<div class='col-lg-4'>
     <form action='/login' method='post' class='well'>
         <div class='form-group'>
             <label>用户名</label>
@@ -29,4 +39,17 @@
         <!--<a href='/'>已有帐号，请直接登录</a>-->
     </form>
 </div>
+<div id="content" class="col-lg-8">
+    <div id="map" class="smallmap olMap">
+        <script type="text/template" id="map-popup-template">
+            <div style="font-size:.8em">
+                <b>站点编号:</b> <%- model.id %><br>
+                <b>站点状态:</b> <%- model.status %><br>
+                <b>站点位置:</b> <%- model.location_description %><br>
+
+            </div>
+        </script>
+    </div>
+</div>
+
 {%end%}

@@ -11,6 +11,14 @@ from model.device import Device
 from model.image import Image
 from util import *
 from util.marcos import *
+from model.device import DeivceStatusChecker
+
+
+class api_device_handler(base_handler):
+    def get(self):
+        devs = Device.find_all()
+        self.write(json.dumps(devs))
+        self.finish()
 
 class api_data_handler(base_handler):
     def post(self):
@@ -28,7 +36,6 @@ class api_data_handler(base_handler):
                 index = Data_Table_Map.get_last_table_index()
             print "last index:", index
             dtm = Data_Table_Map.find_first("where `index`=?", int(index))
-            print "add last index table!:----------",dtm.index
             if dtm == None:
                 Data_Table_Map.add_table(index)
             
@@ -39,6 +46,7 @@ class api_data_handler(base_handler):
             content = data_content['content']
             dev = Device()
             dev = dev.get_device_by_mac(device_mac)
+            DeivceStatusChecker.get_instance().reset_status(device_mac)
             DataParser.get_instance().parse_dev(index, dev.id, dev.dev_type,  content)
         self.write('ok')
 
@@ -66,9 +74,9 @@ class api_image_handler(base_handler):
         pos = Position_Image()
         #print "upload_img",device_mac,device_pos
 
-        device_id = dev.get_device_by_mac(device_mac)
-        position_id = pos.get_position_id(device_id, device_pos)
-        print "upload",device_id,position_id
+        dev = dev.get_device_by_mac(device_mac)
+        position_id = pos.get_position_id(dev.id, device_pos)
+        print "upload",dev.id,position_id
         upload_path = os.path.join(get_pwd_dir(), CAPTURED_DIR)
         filename = meta['filename']
         filename = os.path.basename(filename)

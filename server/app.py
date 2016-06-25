@@ -4,6 +4,7 @@ import tornado.web
 import routes
 import tornado.options
 from tornado.options import define, options
+from model.device import DeivceStatusChecker
 tornado.options.parse_command_line()
 import sys
 reload(sys)
@@ -35,4 +36,5 @@ if __name__ == "__main__":
     app = create_app()
     connect_db()
     app.listen(options.port)
+    DeivceStatusChecker.get_instance().start()
     tornado.ioloop.IOLoop.instance().start()

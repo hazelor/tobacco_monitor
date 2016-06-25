@@ -44,6 +44,7 @@ class Position_Image(Model):
 
     def get_position_by_device_id(self, device_id):
         pos = self.find_by('where device_id = ?', device_id)
+
         if pos:
             return pos
         return []

@@ -23,7 +23,7 @@
 {%block content%}
     <ol class="breadcrumb">
         {%for pos in positions%}
-        <li><a href="/browser?position_id={{pos.id}}">摄像机编号{{pos.position}}</a></li>
+        <li><a href="/img/preview?position_id={{pos.id}}">摄像机-{{pos.position}}</a></li>
         {%end%}
     </ol>
     <div class="panel panel-default">
@@ -48,32 +48,32 @@
             {%else%}
 
             <li>
-                <a href="/preview?page={{current_page-1}}">上一页</a>
+                <a href="/img/preview?page={{current_page-1}}&position_id={{current_position_id}}">上一页</a>
             </li>
             <li>
-                <a href="/preview?page=1">首页</a>
+                <a href="/img/preview?page=1&position_id={{current_position_id}}">首页</a>
             </li>
             {%end%}
 
             {% for index in range(start_page_num,end_page_num+1)%}
                 <li class="{%if current_page == index%}active{%end%}">
-                    <a href="/preview?page={{index}}">{{index}}</a>
+                    <a href="/img/preview?page={{index}}&position_id={{current_position_id}}">{{index}}</a>
                 </li>
             {% end %}
             {%if current_page == total_page_num%}
 
             {%else%}
             <li>
-                <a href="/preview?page={{total_page_num}}">尾页</a>
+                <a href="/img/preview?page={{total_page_num}}&position_id={{current_position_id}}">尾页</a>
             </li>
             <li>
-                <a href="/preview?page={{current_page+1}}">下一页</a>
+                <a href="/img/preview?page={{current_page+1}}&position_id={{current_position_id}}">下一页</a>
             </li>
             {%end%}
             <li style="margin-left: 10px; margin-top:10px">
                  <input id="page_jump_num" class="input-txt" value="{{current_page}}"
                         title="输入后回车自动跳转页面"
-                        onkeydown="javascript:if(event.keyCode==13){page_jump();return false;}">
+                        onkeydown="javascript:if(event.keyCode==13){page_jump({{current_position_id}});return false;}">
             /{{ total_page_num}}页
             </li>
 

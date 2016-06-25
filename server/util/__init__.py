@@ -4,6 +4,7 @@ from marcos import *
 from hashlib import sha1
 import os
 import md5
+import threading, time
 
 def get_pwd_dir():
     return os.getcwd()
@@ -27,3 +28,26 @@ def check_user_exists(func):
             self.redirect("/login")
         self.user = u
         return func(self, user_id)
+
+
+class Timer(threading.Thread):
+    """
+    very simple but useless timer.
+    """
+    def __init__(self, seconds):
+        self.runTime = seconds
+        threading.Thread.__init__(self)
+
+    def run(self):
+        time.sleep(self.runTime)
+
+class CountDownTimer(Timer):
+    """
+    a timer that can counts down the seconds.
+    """
+    def run(self):
+        counter = self.runTime
+        for sec in range(self.runTime):
+            #print counter
+            time.sleep(1.0)
+            counter -= 1

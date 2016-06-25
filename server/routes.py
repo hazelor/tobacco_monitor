@@ -8,6 +8,7 @@ handlers = [
     (r'/data/preview/realtime', data_preview_realtime_handler),
     (r'/data/history',data_history_handler),
     (r'/data/history/query', data_history_query_handler),
+    (r'/data/conf',data_conf_handler),
     (r'/api/data', api_data_handler),
     (r'/api/image', api_image_handler),
     (r'/login', login_handler),

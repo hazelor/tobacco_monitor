@@ -5,7 +5,7 @@ from transwarp.orm import Model, StringField, BooleanField, FloatField, TextFiel
 import time,os
 import json
 import redis
-from util.marcos import DATA_INFOS_FILE_PATH, MAX_TABLE_LINES
+from util.marcos import CONF_DIR, DATA_INFO_FILENAME,CHART_INFO_FILENAME, MAX_TABLE_LINES,RAINFALL_PRE_SHOT
 from util import *
 from transwarp import db
 import sys
@@ -23,14 +23,22 @@ class DataParser():
         return DataParser.__instance
     def __init__(self):
         self._data_infos = {}
-        data_info_path = os.path.join(get_pwd_dir(), DATA_INFOS_FILE_PATH)
+        self._chart_infos = []
+        data_info_path = os.path.join(CONF_DIR, DATA_INFO_FILENAME)
         with open(data_info_path,'r+') as dis:
             contents = dis.readlines()
             contents = [x.strip() for x in contents]
             json_str = ''.join(contents)
             #print "the json string:",json_str
             self._data_infos = eval(json_str)
-            print self._data_infos
+            #print self._data_infos
+        chart_info_path = os.path.join(CONF_DIR,CHART_INFO_FILENAME)
+        with open(chart_info_path,'r+') as cis:
+            contents = cis.readlines()
+            contents = [x.strip() for x in contents]
+            json_str = ''.join(contents)
+            self._chart_infos = eval(json_str)
+
 
     def has_type(self, dev_type):
         for dev_info in self._data_infos:
@@ -49,6 +57,11 @@ class DataParser():
                     if data_info['type_id'] == type_id.strip():
                         return data_info
         return {}
+
+    def get_chart_info(self):
+        return self._chart_infos
+
+
     def parse_dev(self,  table_index, dev_id, dev_type, data_content):
         table_index = int(table_index)
         for dev_info in self._data_infos:
@@ -69,13 +82,35 @@ class DataParser():
                     cdtm.end_time = time.time()
                     cdtm.update()
 
-    def parse_to_json(self, dev_type, data_content, date):
+    def parse_to_json(self, dev_type, data_content, date, dev_id=""):
         res = []
         for dev_info in self._data_infos:
             if dev_info['dev_type'] == dev_type.strip():
                 for index in range(min(len(data_content), len(dev_info['data_content']))):
-                    res.append({'name':dev_info['data_content'][index]['name'],'type_id':dev_info['data_content'][index]['type_id'], 'unit':dev_info['data_content'][index]['unit'], 'value': data_content[index]})
-        return {"date":date, 'content':res}
+                    if dev_info['data_content'][index]['duration'] == 0:
+                        res.append({'name':dev_info['data_content'][index]['name'],
+                                    'type_id':dev_info['data_content'][index]['type_id'],
+                                    'unit':dev_info['data_content'][index]['unit'],
+                                    'value': '%.2f'%(data_content[index]),
+                                    'date':date})
+                    else:
+                        end_time = int(time.time()/3600)*3600
+                        start_time = end_time - 3600
+                        tables = Data_Table_Map.get_tables(start_time, end_time)
+                        data_list = []
+                        for table in tables:
+                            data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, dev_info['data_content'][index]['type_id'], start_time, end_time, sub_name = str(table.index)))
+
+                        data_list = map(lambda di: di.value,data_list)
+                        data_list.extend([0.0,0.0])
+                        value = reduce(lambda di_x, di_y:di_x+di_y, data_list)
+                        print "rainfall-----:",value
+                        res.append({'name':dev_info['data_content'][index]['name'],
+                                    'type_id':dev_info['data_content'][index]['type_id'],
+                                    'unit':dev_info['data_content'][index]['unit'],
+                                    'value': '%.2f'%(value*RAINFALL_PRE_SHOT),
+                                    'date':end_time*1000})
+        return res
 
 
 
@@ -120,7 +155,7 @@ class Data_Table_Map(Model):
 
     @classmethod
     def get_tables(cls, start_time, end_time):
-        return cls.find_by('where start_time<? or end_time>?', end_time, start_time)
+        return cls.find_by('where start_time<? and end_time>?', end_time, start_time)
 
      
 

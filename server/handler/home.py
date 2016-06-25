@@ -58,12 +58,13 @@ class home_handler(base_handler):
         reses = []
         for dev in devices:
             data_content = r.get("col_datas_%s" %(dev.mac))
-            data_content = eval(data_content)
-            print "data_content:",type(data_content)
             if data_content:
+                data_content = eval(data_content)
+                print "data_content:",type(data_content)
                 res = DataParser.get_instance().parse_to_json(dev.dev_type, data_content['content'], data_content['date'])
-                res['location'] = dev.location
-                reses.append(res)
+                rd = {"location":dev.location, 'content':res}
+                #res['location'] = dev.location
+                reses.append(rd)
         return reses
 
     def on_get_summery_info(self, res_image, res_data):

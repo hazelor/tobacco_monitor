@@ -88,16 +88,16 @@ function loading_end(){
 
 
 
-function render_chart(datas, title, title_y){
+function render_chart(datas, title, title_y, plot_type){
     Highcharts.setOptions({
             global: {
-                useUTC: true
+                useUTC: false
             }
         });
 
         $('#chart_history').highcharts({
             chart: {
-                type: 'spline',                      //曲线样式
+                type: plot_type,                      //曲线样式
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
             },
@@ -147,7 +147,7 @@ function render_chart(datas, title, title_y){
 
 
 $(function(){
-    render_chart([],'','')
+    render_chart([],'','','spline')
         });
 
 
@@ -200,8 +200,14 @@ function selected_history(){
                         datas.push(jdata['values'][i]);
                     //}
                 }
+                if(jdata['duration'] == 0){
+                    render_chart(datas, jdata['name'], jdata['unit'],'spline');
+                }
+                else {
+                    render_chart(datas, jdata['name'], jdata['unit'],'column');
+                }
 
-                render_chart(datas, jdata['name'], jdata['unit']);
+
                 loading_end()
             }
 

@@ -8,3 +8,4 @@ from handler.setting import *
 from handler.history import *
 from handler.auth import *
 from handler.api import *
+from handler.config import *
