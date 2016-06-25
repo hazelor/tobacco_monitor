@@ -10,7 +10,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 define('www_domain', default='127.0.0.1', type = str, help='env domain')
-define('port', default=8080, type = int, help='app listen port')
+define('port', default=8888, type = int, help='app listen port')
 define('debug', default=True, type = bool, help='is debuging?')
 
 
@@ -29,7 +29,7 @@ def create_app():
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('sonic513', 'sonic513', 'tobacco_monitor', port=3306)
+    dbutil.create_engine('root', 'sonic513', 'tobacco_monitor', port=3306)
 
 if __name__ == "__main__":
     app = create_app()
