@@ -91,7 +91,7 @@ class DataParser():
                         res.append({'name':dev_info['data_content'][index]['name'],
                                     'type_id':dev_info['data_content'][index]['type_id'],
                                     'unit':dev_info['data_content'][index]['unit'],
-                                    'value': data_content[index],
+                                    'value': '%.2f'%(data_content[index]),
                                     'date':date})
                     else:
                         end_time = int(time.time()/3600)*3600
@@ -102,12 +102,13 @@ class DataParser():
                             data_list.extend(Data.find_by('where device_id = ? and type_id = ? and created_at between ? and ?', dev_id, dev_info['data_content'][index]['type_id'], start_time, end_time, sub_name = str(table.index)))
 
                         data_list = map(lambda di: di.value,data_list)
+                        data_list.extend([0.0,0.0])
                         value = reduce(lambda di_x, di_y:di_x+di_y, data_list)
                         print "rainfall-----:",value
                         res.append({'name':dev_info['data_content'][index]['name'],
                                     'type_id':dev_info['data_content'][index]['type_id'],
                                     'unit':dev_info['data_content'][index]['unit'],
-                                    'value': value*RAINFALL_PRE_SHOT,
+                                    'value': '%.2f'%(value*RAINFALL_PRE_SHOT),
                                     'date':end_time*1000})
         return res
 
