@@ -13,6 +13,13 @@ from util import *
 from util.marcos import *
 from model.device import DeivceStatusChecker
 
+
+class api_device_handler(base_handler):
+    def get(self):
+        devs = Device.find_all()
+        self.write(json.dumps(devs))
+        self.finish()
+
 class api_data_handler(base_handler):
     def post(self):
         jdatas = json.loads(self.request.body)
