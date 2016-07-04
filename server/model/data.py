@@ -91,7 +91,7 @@ class DataParser():
                         res.append({'name':dev_info['data_content'][index]['name'],
                                     'type_id':dev_info['data_content'][index]['type_id'],
                                     'unit':dev_info['data_content'][index]['unit'],
-                                    'value': '%.2f'%(data_content[index]),
+                                    'value': float('%.2f'%(data_content[index])),
                                     'date':date})
                     else:
                         end_time = int(time.time()/3600)*3600
@@ -108,7 +108,7 @@ class DataParser():
                         res.append({'name':dev_info['data_content'][index]['name'],
                                     'type_id':dev_info['data_content'][index]['type_id'],
                                     'unit':dev_info['data_content'][index]['unit'],
-                                    'value': '%.2f'%(value*RAINFALL_PRE_SHOT),
+                                    'value': float('%.2f'%(value*RAINFALL_PRE_SHOT)),
                                     'date':end_time*1000})
         return res
 

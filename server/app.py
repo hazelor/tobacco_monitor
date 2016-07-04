@@ -30,7 +30,7 @@ def create_app():
 
 def connect_db():
     import transwarp.db as dbutil
-    dbutil.create_engine('root', 'sonic513', 'tobacco_monitor', port=3306)
+    dbutil.create_engine('root', 'sonic513', 'tobacco_monitor',port=3306)
 
 if __name__ == "__main__":
     app = create_app()

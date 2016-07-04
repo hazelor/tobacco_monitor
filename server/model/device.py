@@ -101,3 +101,4 @@ class DeivceStatusChecker(CountDownTimer):
             dev.status = DEV_STATUS_GOOD
             dev.update()
 
+            

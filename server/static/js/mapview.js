@@ -1,116 +1,95 @@
-(function(root){
-"use strict";
-var licor = root.licor,
-    _ = root._,
-    Backbone = root.Backbone,
-    OpenLayers = root.OpenLayers,
-    MapView = Backbone.View.extend({
+window.onload=function() {
+    render();
 
-      collection: licor.stations,
-      el: '#map',
+}
+var colors = [ "#66a50f", "#aaaaaa", "#ff3c3c","#ff8b61"];
+var statuses = ["OK","Inactive", "Error","Warning"];
 
-      initialize: function(){
-        this.listenTo(this.collection, 'reset', this.render);
-        this.map = new OpenLayers.Map(this.el, {projection:"EPSG:3857"});
-        this.popupTemplate = _.template(this.$('#map-popup-template').html(), null, {variable:'model'});
+function render(){
+    var toMercator = OpenLayers.Projection.transforms['EPSG:4326']['EPSG:3857'];
+    _ = this._;
+    var popupTemplate = _.template(this.$('#map-popup-template').html(), null, {variable:'model'});
+    $.ajax({
+        url:'/api/device',
+        type:'get',
+        dataType:'text',
+        timeout: 1800,
+        success:function(data, status){
+            var map = new OpenLayers.Map("map",{projection:"EPSG:3857"});
+            //var osm = new OpenLayers.Layer.OSM();
 
-        this.colors = ["#aaaaaa", "#66a50f", "#ff8b61", "#ff3c3c"];
-        this.statuses = ["Inactive", "OK", "Warning", "Error"];
+            var osm = new OpenLayers.Layer.OSM("OpenStreetMap", [
+                  '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
 
-        this.osm = new OpenLayers.Layer.OSM("OpenStreetMap", [
-          '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
-          '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
-          '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
-        this.toMercator = OpenLayers.Projection.transforms['EPSG:4326']['EPSG:3857'];
-        this.center = this.toMercator({y:39.913,x:116.391});
-      },
+            var j_data = $.parseJSON(data);
+            var features = j_data.map(function(val) {
+              //var loc = val.get('location') || {};
+              return new OpenLayers.Feature.Vector(
+                toMercator(new OpenLayers.Geometry.Point(val.lon, val.lat)),
+                  {
+                     id : val['mac'],
+                     status: statuses[val['status']],
+                     //abbreviation : val.get('abbreviation'),
+                     location_description : val['location'],
+                     //ecosystem : val.get('ecosystem')
+                  },
+                  {
+                     fillColor : colors[val['status']],
+                     fillOpacity : 0.8,
+                     strokeColor : '#4d4d4d',
+                     strokeOpacity : 1,
+                     strokeWidth : 1,
+                     pointRadius : 8
+                  });
+            });
 
-      events: {
-        'click .olControlZoomIn': 'zoomIn',
-        'click .olControlZoomOut': 'zoomOut'
-      },
+            // create the layer with listeners to create and destroy popups
+            var vector = new OpenLayers.Layer.Vector("Points",{
+              eventListeners:{
 
-      zoomIn: function(){
-        return this.map.zoomIn();
-      },
+                'featureselected':function(evt){
+                  var feature = evt.feature;
+                  var popup = new OpenLayers.Popup.FramedCloud("popup",
+                        OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+                        null,
+                        popupTemplate(feature.attributes),
+                        null,
+                        true);
+                  feature.popup = popup;
+                  map.addPopup(popup);
 
-      zoomOut: function(){
-        return this.map.zoomOut();
-      },
+                  //if(licor.currentUser){
+                  //  OpenLayers.Event.observe(view.el, 'mousedown', function(evt) {
+                  //      location.href=licor.stations.url+feature.attributes.id;
+                  //    }, false);
+                  //}
+                },
 
-      render: function(){
-        var view = this,
-        map = view.map;
-
-        var features = view.collection.map(function(val) {
-          var loc = val.get('location') || {};
-          return new OpenLayers.Feature.Vector(
-            view.toMercator(new OpenLayers.Geometry.Point(loc.longitude, loc.latitude)),
-              {
-                 id: val.get('id'),
-                 name : val.get('name'),
-                 status: view.statuses[val.get('status')],
-                 abbreviation : val.get('abbreviation'),
-                 location_description : val.get('location_description'),
-                 ecosystem : val.get('ecosystem')
-              },
-              {
-                 fillColor : view.colors[val.get('status')],
-                 fillOpacity : 0.8,
-                 strokeColor : '#4d4d4d',
-                 strokeOpacity : 1,
-                 strokeWidth : 1,
-                 pointRadius : 8
-              });
-        });
-        // create the layer with listeners to create and destroy popups
-        var vector = new OpenLayers.Layer.Vector("Points",{
-          eventListeners:{
-
-            'featureselected':function(evt){
-              var feature = evt.feature;
-              var popup = new OpenLayers.Popup.FramedCloud("popup",
-                    OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
-                    null,
-                    view.popupTemplate(feature.attributes),
-                    null,
-                    true);
-              feature.popup = popup;
-              map.addPopup(popup);
-
-              if(licor.currentUser){
-                OpenLayers.Event.observe(view.el, 'mousedown', function(evt) {
-                    location.href=licor.stations.url+feature.attributes.id;
-                  }, false);
+                'featureunselected':function(evt){
+                  var feature = evt.feature;
+                  map.removePopup(feature.popup);
+                  feature.popup.destroy();
+                  feature.popup = null;
+                }
               }
-            },
+            });
 
-            'featureunselected':function(evt){
-              var feature = evt.feature;
-              map.removePopup(feature.popup);
-              feature.popup.destroy();
-              feature.popup = null;
-            }
-          }
-        });
+            vector.addFeatures(features);
 
-        vector.addFeatures(features);
+            // create the select feature control
+            var selector = new OpenLayers.Control.SelectFeature(vector,{
+              hover:true,
+              autoActivate:true
+            });
 
-        // create the select feature control
-        var selector = new OpenLayers.Control.SelectFeature(vector,{
-          hover:true,
-          autoActivate:true
-        });
+            map.addLayers([osm, vector]);
+            map.addControl(selector);
+            //map.zoomToMaxExtent();
 
-        map.addLayers([view.osm, vector]);
-        map.addControl(selector);
-        var extent = vector.getDataExtent();
-        if(extent && !_.isNaN(extent.left)){
-          map.zoomToExtent(extent);
-        } else {
-          map.setCenter(new OpenLayers.LonLat(view.center.x, view.center.y), 3);
+            var center = toMercator({y:27.958,x:107.7125});
+            map.setCenter(new OpenLayers.LonLat(center.x, center.y), 6);
         }
-      }
-});
-new MapView();
-})(this);
+    })
+}

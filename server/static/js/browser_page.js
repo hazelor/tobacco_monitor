@@ -1,8 +1,8 @@
 /**
  * Created by guoxiao on 16/4/4.
  */
-function page_jump(){
-    var url = "/preview?page="+$("#page_jump_num").val();
+function page_jump(position_id){
+    var url = "/preview?page="+$("#page_jump_num").val()+"&position_id="+position_id;
     window.location.replace(url);
 }
 

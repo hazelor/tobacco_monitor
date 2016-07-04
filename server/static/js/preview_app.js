@@ -19,7 +19,7 @@ function on_selected_device_change(){
     var date = new Date()
     var end_time = date.pattern("yyyy-MM-dd hh:mm");
     var date_milliseconds = date.getTime();
-    date_milliseconds -= 1000*60*60*24;
+    date_milliseconds -= 1000*60*60*4;
     date = new Date(date_milliseconds);
     var start_time = date.pattern("yyyy-MM-dd hh:mm");
     //var chart = $('#container').highcharts()
@@ -112,7 +112,7 @@ function on_selected_device_change(){
                                             var plot_data = [data_content[i]['date'], data_content[i]['value']];
                                         }
                                         if(series[series_index].data[serie_1_len-1]['x'] != plot_data[0]){
-                                            if(plot_data[0]-series[series_index].data[0]['x']>=20*60*1000){
+                                            if(plot_data[0]-series[series_index].data[0]['x']>=4*60*60*1000){
                                                 series[series_index].addPoint(plot_data,true,true)
                                             }
                                             else{
@@ -133,7 +133,7 @@ function on_selected_device_change(){
                         }
                     }
                 })
-            },2000
+            },10000
         )
     }
 }
